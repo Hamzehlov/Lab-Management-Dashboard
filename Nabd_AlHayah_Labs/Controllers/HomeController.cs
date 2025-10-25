@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MMedicalLaboratoryAPI.Data;
 using Nabd_AlHayah_Labs.Model;
@@ -44,7 +44,7 @@ namespace Nabd_AlHayah_Labs.Controllers
 			return View(news);
 		}
 
-		// ??? ????????
+	
 		public async Task<IActionResult> DetailsNews(int id)
 		{
 			var news = await _context.NewsEvents.FindAsync(id);
@@ -54,39 +54,37 @@ namespace Nabd_AlHayah_Labs.Controllers
 			return View(news);
 		}
 
-		// ??? ???? ???????
 		public IActionResult CreateNews()
 		{
 			return View();
 		}
 
-		// ??? ???????? ??? ???????
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> CreateNews(NewsEvent model, IFormFile? ImageFile)
-		{
-			if (ModelState.IsValid)
-			{
-				if (ImageFile != null)
-				{
-					string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-					string filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
-					using (var stream = new FileStream(filePath, FileMode.Create))
-					{
-						await ImageFile.CopyToAsync(stream);
-					}
-					model.ImageUrl = "/uploads/" + fileName;
-				}
+        public async Task<IActionResult> CreateNews(NewsEvent model, IFormFile? ImageFile)
+        {
+            if (ModelState.IsValid)
+            {
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        await ImageFile.CopyToAsync(ms);
+                        model.Image = ms.ToArray(); // هنا نحفظ الصورة باينري
+                    }
+                }
 
-				_context.Add(model);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
-			}
-			return View(model);
-		}
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Indexnews));
+            }
 
-		// ??? ???? ???????
-		public async Task<IActionResult> EditNews(int id)
+            return View(model);
+        }
+
+
+        public async Task<IActionResult> EditNews(int id)
 		{
 			var news = await _context.NewsEvents.FindAsync(id);
 			if (news == null)
@@ -95,64 +93,56 @@ namespace Nabd_AlHayah_Labs.Controllers
 			return View(news);
 		}
 
-		// ??? ?????????
+	
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> EditNews(int id, NewsEvent model, IFormFile? ImageFile)
-		{
-			if (id != model.Id)
-				return NotFound();
+        public async Task<IActionResult> EditNews(int id, NewsEvent model, IFormFile? ImageFile)
+        {
+            if (id != model.Id)
+                return NotFound();
 
-			if (ModelState.IsValid)
-			{
-				try
-				{
-					var existing = await _context.NewsEvents.FindAsync(id);
-					if (existing == null)
-						return NotFound();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existing = await _context.NewsEvents.FindAsync(id);
+                    if (existing == null)
+                        return NotFound();
 
-					existing.TitleAr = model.TitleAr;
-					existing.TitleEn = model.TitleEn;
-					existing.DescriptionAr = model.DescriptionAr;
-					existing.DescriptionEn = model.DescriptionEn;
-					existing.EventDate = model.EventDate;
+                    // تحديث البيانات
+                    existing.TitleAr = model.TitleAr;
+                    existing.TitleEn = model.TitleEn;
+                    existing.DescriptionAr = model.DescriptionAr;
+                    existing.DescriptionEn = model.DescriptionEn;
+                    existing.EventDate = model.EventDate;
 
-					if (ImageFile != null)
-					{
-						string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-						string filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
-						using (var stream = new FileStream(filePath, FileMode.Create))
-						{
-							await ImageFile.CopyToAsync(stream);
-						}
-						existing.ImageUrl = "/uploads/" + fileName;
-					}
+                    // تحديث الصورة إذا تم اختيار صورة جديدة
+                    if (ImageFile != null && ImageFile.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            await ImageFile.CopyToAsync(ms);
+                            existing.Image = ms.ToArray();
+                        }
+                    }
 
-					_context.Update(existing);
-					await _context.SaveChangesAsync();
-					return RedirectToAction(nameof(Index));
-				}
-				catch (DbUpdateConcurrencyException)
-				{
-					return NotFound();
-				}
-			}
-			return View(model);
-		}
+                    _context.Update(existing);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Indexnews));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    return NotFound();
+                }
+            }
+            return View(model);
+        }
 
-		// ????? ?????
-		public async Task<IActionResult> Delete(int id)
-		{
-			var news = await _context.NewsEvents.FindAsync(id);
-			if (news == null)
-				return NotFound();
 
-			return View(news);
-		}
+     
+		
+		[HttpPost]
 
-		// ????? ?????
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			var news = await _context.NewsEvents.FindAsync(id);
@@ -169,7 +159,7 @@ namespace Nabd_AlHayah_Labs.Controllers
 				await _context.SaveChangesAsync();
 			}
 
-			return RedirectToAction(nameof(Index));
+			return RedirectToAction(nameof(Indexnews));
 		}
 
 

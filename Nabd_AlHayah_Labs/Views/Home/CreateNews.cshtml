@@ -3,65 +3,92 @@
     ViewData["Title"] = "Create News";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-lg border-0">
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i> @ViewData["Title"]</h4>
-        </div>
-        <div class="card-body">
-            <form asp-action="CreateNews" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Arabic Title</label>
-                    <input asp-for="TitleAr" class="form-control" />
-                    <span asp-validation-for="TitleAr" class="text-danger"></span>
-                </div>
+<div class="app-wrapper">
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">English Title</label>
-                    <input asp-for="TitleEn" class="form-control" />
-                </div>
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h1 class="app-page-title">@ViewData["Title"]</h1>
+            <hr class="mb-4">
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Arabic Description</label>
-                    <textarea asp-for="DescriptionAr" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">English Description</label>
-                    <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Event Date</label>
-                    <input asp-for="EventDate" type="date" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Image</label>
-                    <input type="file" name="ImageFile" id="imageInput" class="form-control" accept="image/*" />
-
-                    <!-- ✅ معاينة الصورة -->
-                    <div class="mt-3 text-center">
-                        <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded shadow-sm d-none" style="max-height: 250px; object-fit: cover;" />
+            <div class="row g-4 settings-section">
+                <div class="col-12 col-md-4">
+                    <h3 class="section-title">News Details</h3>
+                    <div class="section-intro">
+                        Fill in the news information below. You can add titles, descriptions, event date, and an image.
                     </div>
                 </div>
 
-                <div class="text-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                <div class="col-12 col-md-8">
+                    <div class="app-card app-card-settings shadow-sm p-4">
 
+                        <div class="app-card-body">
+                            <form asp-action="CreateNews" enctype="multipart/form-data" class="settings-form">
+
+                                <!-- Arabic Title -->
+                                <div class="mb-3">
+                                    <label asp-for="TitleAr" class="form-label fw-bold">Arabic Title</label>
+                                    <input asp-for="TitleAr" class="form-control" />
+                                    <span asp-validation-for="TitleAr" class="text-danger"></span>
+                                </div>
+
+                                <!-- English Title -->
+                                <div class="mb-3">
+                                    <label asp-for="TitleEn" class="form-label fw-bold">English Title</label>
+                                    <input asp-for="TitleEn" class="form-control" />
+                                </div>
+
+                                <!-- Arabic Description -->
+                                <div class="mb-3">
+                                    <label asp-for="DescriptionAr" class="form-label fw-bold">Arabic Description</label>
+                                    <textarea asp-for="DescriptionAr" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <!-- English Description -->
+                                <div class="mb-3">
+                                    <label asp-for="DescriptionEn" class="form-label fw-bold">English Description</label>
+                                    <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <!-- Event Date -->
+                                <div class="mb-3">
+                                    <label asp-for="EventDate" class="form-label fw-bold">Event Date</label>
+                                    <input asp-for="EventDate" type="date" class="form-control" />
+                                </div>
+
+                                <!-- Image Upload -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Image</label>
+                                    <input type="file" name="ImageFile" id="imageInput" class="form-control" accept="image/*" />
+                                    <div class="mt-3 text-center">
+                                        <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded shadow-sm d-none" style="max-height: 250px; object-fit: cover;" />
+                                    </div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="text-end">
+                                    <button type="submit" class="btn app-btn-primary">
+                                        <i class="fas fa-save me-2"></i> Save
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div><!--//app-card-body-->
+
+                    </div><!--//app-card-->
+                </div>
+            </div><!--//row-->
+            <hr class="my-4">
+
+        </div><!--//container-xl-->
+    </div><!--//app-content-->
+
+</div><!--//app-wrapper-->
 @section Scripts {
     <script>
-        // ✅ عرض معاينة الصورة قبل الحفظ
+        // عرض معاينة الصورة قبل الحفظ
         document.getElementById("imageInput").addEventListener("change", function (event) {
             const file = event.target.files[0];
             const preview = document.getElementById("imagePreview");

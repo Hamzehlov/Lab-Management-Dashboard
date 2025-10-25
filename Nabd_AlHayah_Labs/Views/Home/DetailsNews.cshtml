@@ -1,58 +1,103 @@
 ﻿@model Nabd_AlHayah_Labs.Model.NewsEvent
 @{
-    ViewData["Title"] = "تفاصيل الخبر / الحدث";
+    ViewData["Title"] = "News / Event Details";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-lg border-0 rounded-3">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">
-                <i class="fas fa-newspaper me-2"></i> تفاصيل الخبر / الحدث
-            </h4>
-            <a asp-action="Index" class="btn btn-light btn-sm">
-                <i class="fas fa-arrow-left"></i> رجوع
-            </a>
-        </div>
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <div class="app-card shadow-lg rounded-3 overflow-hidden">
 
-        <div class="card-body">
-            <div class="row g-4">
-                <div class="col-md-4 text-center">
-                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover;" alt="News Image" />
-                    }
-                    else
-                    {
-                        <div class="text-muted">لا توجد صورة</div>
-                    }
+                <!-- Header -->
+                <div class="app-card-header d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <h4 class="mb-0">
+                        <i class="fas fa-newspaper me-2"></i> News / Event Details
+                    </h4>
+                    <a asp-action="Index" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Back
+                    </a>
                 </div>
 
-                <div class="col-md-8">
-                    <h5 class="fw-bold text-success mb-2">العنوان (عربي):</h5>
-                    <p class="text-dark">@Model.TitleAr</p>
+                <!-- Body -->
+                <div class="app-card-body p-4">
+                    <div class="row g-4 align-items-center">
+                        <!-- Image Section -->
+                        <div class="col-md-5 text-center">
+                            @if ((Model.Image != null && Model.Image.Length > 0) || !string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="position-relative rounded overflow-hidden shadow-sm" style="max-height:300px;">
+                                    @if (Model.Image != null && Model.Image.Length > 0)
+                                    {
+                                        var base64 = Convert.ToBase64String(Model.Image);
+                                        var imgSrc = $"data:image/png;base64,{base64}";
+                                        <img src="@imgSrc" class="img-fluid w-100" style="object-fit: cover;" alt="News Image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@Model.ImageUrl" class="img-fluid w-100" style="object-fit: cover;" alt="News Image" />
+                                    }
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center overlay"
+                                         style="background: rgba(0,0,0,0.2); color:white; opacity:0; transition: opacity 0.3s;">
+                                        <i class="fas fa-newspaper fa-2x"></i>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-muted fst-italic">No image available</div>
+                            }
+                        </div>
 
-                    <h5 class="fw-bold text-success mb-2">العنوان (إنجليزي):</h5>
-                    <p class="text-dark">@Model.TitleEn</p>
+                        <!-- Details Section -->
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <h5 class="fw-bold">Title (Arabic):</h5>
+                                <p class="fs-5">@Model.TitleAr</p>
+                            </div>
 
-                    <h5 class="fw-bold text-success mb-2">الوصف (عربي):</h5>
-                    <p>@Model.DescriptionAr</p>
+                            <div class="mb-3">
+                                <h5 class="fw-bold">Title (English):</h5>
+                                <p class="fs-5">@Model.TitleEn</p>
+                            </div>
 
-                    <h5 class="fw-bold text-success mb-2">الوصف (إنجليزي):</h5>
-                    <p>@Model.DescriptionEn</p>
+                            <div class="mb-3">
+                                <h5 class="fw-bold">Description (Arabic):</h5>
+                                <p>@Model.DescriptionAr</p>
+                            </div>
 
-                    <h5 class="fw-bold text-success mb-2">تاريخ الحدث:</h5>
-                    <p>@Model.EventDate?.ToString("yyyy-MM-dd")</p>
+                            <div class="mb-3">
+                                <h5 class="fw-bold">Description (English):</h5>
+                                <p>@Model.DescriptionEn</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h5 class="fw-bold">Event Date:</h5>
+                                <p>@Model.EventDate?.ToString("yyyy-MM-dd")</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Footer -->
+                <div class="app-card-footer d-flex justify-content-end gap-2 p-3 border-top">
+                    <a asp-action="EditNews" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                 
+                </div>
+
             </div>
-        </div>
-
-        <div class="card-footer bg-light text-end">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-                <i class="fas fa-edit"></i> تعديل
-            </a>
-            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                <i class="fas fa-trash-alt"></i> حذف
-            </a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Hover effect on the image overlay
+        document.querySelectorAll('.position-relative').forEach(wrapper => {
+            const overlay = wrapper.querySelector('.overlay');
+            wrapper.addEventListener('mouseenter', () => overlay.style.opacity = 1);
+            wrapper.addEventListener('mouseleave', () => overlay.style.opacity = 0);
+        });
+    </script>
+}

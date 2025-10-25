@@ -1,0 +1,78 @@
+﻿@model Nabd_AlHayah_Labs.ViewModels.PatientDetailsViewModel
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h1 class="mb-4">Patient Details</h1>
+
+            <!-- زر الرجوع أعلى الصفحة -->
+            <a asp-action="Index" class="btn btn-secondary mb-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to Patients
+            </a>
+
+            <div class="card shadow-sm mb-4 p-3">
+                <h4>Basic Info</h4>
+                <p><strong>Full Name (EN):</strong> @Model.Patient.FullNameEn</p>
+                <p><strong>Full Name (AR):</strong> @Model.Patient.FullNameAr</p>
+                <p><strong>National ID:</strong> @Model.Patient.NationalId</p>
+                <p><strong>Phone:</strong> @Model.Patient.Phone</p>
+                <p><strong>Email:</strong> @Model.Patient.Email</p>
+                <p><strong>Address:</strong> @Model.Patient.AddressEn / @Model.Patient.AddressAr</p>
+                <p><strong>Pat_No:</strong> @Model.Patient.Pat_No</p>
+            </div>
+
+            <div class="card shadow-sm mb-4 p-3">
+                <h4>Health Monitorings</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Details</th>
+                            <th>Based On Tests</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var monitor in Model.HealthMonitorings)
+                        {
+                            <tr>
+                                <td>@monitor.RecommendationTitleEn ?? monitor.RecommendationTitleAr</td>
+                                <td>@monitor.RecommendationDetailsEn ?? monitor.RecommendationDetailsAr</td>
+                                <td>@monitor.BasedOnTests</td>
+                                <td>@monitor.CreatedAt?.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card shadow-sm mb-4 p-3">
+                <h4>Appointments</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.Appointments)
+                        {
+                            <tr>
+                                <td>@app.AppointmentDate.ToString("dd MMM yyyy HH:mm")</td>
+                                <td>@app.AppointmentType?.CodeDescEn ?? app.AppointmentType?.NameAr</td>
+                                <td>@app.Status?.CodeDescEn ?? app.Status?.NameAr</td>
+                                <td>@app.Notes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- زر الرجوع أسفل الصفحة -->
+          
+        </div>
+    </div>
+</div>

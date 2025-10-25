@@ -3,98 +3,142 @@
     ViewData["Title"] = "Edit News";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-lg border-0">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0"><i class="fas fa-edit me-2"></i> @ViewData["Title"]</h4>
-        </div>
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h1 class="app-page-title">@ViewData["Title"]</h1>
+            <hr class="mb-4">
 
-        <div class="card-body">
-            <form asp-action="EditNews" enctype="multipart/form-data">
-                <input type="hidden" asp-for="Id" />
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Arabic Title</label>
-                    <input asp-for="TitleAr" class="form-control" />
-                    <span asp-validation-for="TitleAr" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">English Title</label>
-                    <input asp-for="TitleEn" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Arabic Description</label>
-                    <textarea asp-for="DescriptionAr" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">English Description</label>
-                    <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Event Date</label>
-                    <input asp-for="EventDate" type="date" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Current Image</label>
-                    <div class="text-center mb-2">
-                        @if (Model.Image != null && Model.Image.Length > 0)
-                        {
-                            var base64 = Convert.ToBase64String(Model.Image);
-                            var imgSrc = $"data:image/png;base64,{base64}";
-                            <img src="@imgSrc" id="currentImage" alt="Current Image" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover;" />
-                        }
-                        else
-                        {
-                            <p class="text-muted fst-italic">No image available</p>
-                        }
+            <div class="row g-4 settings-section">
+                <div class="col-12 col-md-4">
+                    <h3 class="section-title">News Details</h3>
+                    <div class="section-intro">
+                        Edit the news information below. You can update titles, descriptions, event date, and replace the image.
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Upload New Image</label>
-                    <input type="file" name="ImageFile" id="imageInput" class="form-control" accept="image/*" />
+                <div class="col-12 col-md-8">
+                    <div class="app-card app-card-settings shadow-sm p-4">
+                        <div class="app-card-body">
+                            <form asp-action="EditNews" enctype="multipart/form-data" class="settings-form">
+                                <input type="hidden" asp-for="Id" />
 
-                    <!-- ✅ معاينة الصورة الجديدة -->
-                    <div class="mt-3 text-center">
-                        <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded shadow-sm d-none" style="max-height: 250px; object-fit: cover;" />
-                    </div>
+                                <!-- Arabic Title -->
+                                <div class="mb-3">
+                                    <label asp-for="TitleAr" class="form-label fw-bold">Arabic Title</label>
+                                    <input asp-for="TitleAr" class="form-control" />
+                                    <span asp-validation-for="TitleAr" class="text-danger"></span>
+                                </div>
+
+                                <!-- English Title -->
+                                <div class="mb-3">
+                                    <label asp-for="TitleEn" class="form-label fw-bold">English Title</label>
+                                    <input asp-for="TitleEn" class="form-control" />
+                                </div>
+
+                                <!-- Arabic Description -->
+                                <div class="mb-3">
+                                    <label asp-for="DescriptionAr" class="form-label fw-bold">Arabic Description</label>
+                                    <textarea asp-for="DescriptionAr" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <!-- English Description -->
+                                <div class="mb-3">
+                                    <label asp-for="DescriptionEn" class="form-label fw-bold">English Description</label>
+                                    <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <!-- Event Date -->
+                                <div class="mb-3">
+                                    <label asp-for="EventDate" class="form-label fw-bold">Event Date</label>
+                                    <input asp-for="EventDate" type="date" class="form-control" />
+                                </div>
+
+                                <!-- Image Preview (Hover Effect) -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">News Image</label>
+                                    <div class="image-wrapper position-relative text-center mb-2" style="max-height: 250px; overflow: hidden; border-radius: 8px;">
+                                        @if (Model.Image != null && Model.Image.Length > 0)
+                                        {
+                                            var base64 = Convert.ToBase64String(Model.Image);
+                                            var imgSrc = $"data:image/png;base64,{base64}";
+                                            <img src="@imgSrc" id="currentImage" class="img-fluid shadow-sm w-100" style="object-fit: cover; max-height: 250px;">
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted fst-italic">No image available</p>
+                                        }
+
+                                        <!-- Hover Overlay -->
+                                        <div id="hoverOverlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-white fw-bold fs-5" style="background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s; cursor: pointer;">
+                                            This image will be replaced when you upload a new one
+                                        </div>
+
+                                        <!-- New Image Preview -->
+                                        <img id="imagePreview" src="#" alt="New Image Preview"
+                                             class="img-fluid position-absolute top-0 start-0 w-100 h-100 d-none"
+                                             style="object-fit: cover; opacity: 0.9;">
+                                        <span id="previewLabel" class="badge bg-success position-absolute top-0 start-0 d-none m-2">New</span>
+                                    </div>
+
+                                    <label class="form-label fw-bold mt-3">Upload New Image</label>
+                                    <input type="file" name="ImageFile" id="imageInput" class="form-control" accept="image/*" />
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="text-end">
+                                    <button type="submit" class="btn app-btn-primary">
+                                        <i class="fas fa-save me-2"></i> Save
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div><!--//app-card-body-->
+                    </div><!--//app-card-->
                 </div>
+            </div><!--//row-->
+            <hr class="my-4">
 
-                <div class="text-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+        </div><!--//container-xl-->
+    </div><!--//app-content-->
+</div><!--//app-wrapper-->
 @section Scripts {
     <script>
-        // ✅ عرض معاينة الصورة الجديدة قبل الحفظ
-        document.getElementById("imageInput").addEventListener("change", function (event) {
+        const imageInput = document.getElementById("imageInput");
+        const preview = document.getElementById("imagePreview");
+        const previewLabel = document.getElementById("previewLabel");
+        const hoverOverlay = document.getElementById("hoverOverlay");
+        const currentImage = document.getElementById("currentImage");
+
+        // Hover effect
+        if (currentImage) {
+            currentImage.parentElement.addEventListener("mouseenter", function () {
+                hoverOverlay.style.opacity = 1;
+            });
+            currentImage.parentElement.addEventListener("mouseleave", function () {
+                hoverOverlay.style.opacity = 0;
+            });
+        }
+
+        // New Image Preview
+        imageInput.addEventListener("change", function (event) {
             const file = event.target.files[0];
-            const preview = document.getElementById("imagePreview");
 
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     preview.src = e.target.result;
                     preview.classList.remove("d-none");
+                    previewLabel.classList.remove("d-none");
                 };
                 reader.readAsDataURL(file);
             } else {
                 preview.src = "#";
                 preview.classList.add("d-none");
+                previewLabel.classList.add("d-none");
             }
         });
     </script>

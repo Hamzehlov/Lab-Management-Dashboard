@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Nabd_AlHayah_Labs.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nabd_AlHayah_Labs.ViewModels
 {
@@ -83,4 +85,27 @@ namespace Nabd_AlHayah_Labs.ViewModels
 		[Display(Name = "نشط؟")]
 		public bool IsActive { get; set; } = true;
 	}
+
+    public class PatientDetailsViewModel
+    {
+        public Patient Patient { get; set; } = new Patient();
+
+        public IEnumerable<HealthMonitoring> HealthMonitorings { get; set; } = new List<HealthMonitoring>();
+
+        public IEnumerable<Appointment> Appointments { get; set; } = new List<Appointment>();
+    }
+
+
+    public class PatientCreateViewModel
+    {
+        public Patient Patient { get; set; } = new Patient();
+
+        // كلمة المرور بشكل منفصل
+        public string? Password { get; set; }
+
+        // قائمة الجندر لعمل DropDownList
+        public List<SelectListItem> Genders { get; set; } = new List<SelectListItem>();
+    }
+
+
 }

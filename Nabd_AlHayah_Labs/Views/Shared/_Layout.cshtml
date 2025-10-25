@@ -149,7 +149,7 @@
 							</div><!--//app-utility-item-->
 
 							<div class="app-utility-item app-user-dropdown dropdown">
-								<a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="assets/images/2.jpeg" alt="user profile"></a>
+								<a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="~/assets/images/2.jpeg" alt="user profile"></a>
 								<ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
 									<li><a class="dropdown-item" href="account.html.htm">Account</a></li>
 									<li><a class="dropdown-item" href="settings.html.htm">Settings</a></li>
@@ -171,7 +171,7 @@
 				<!-- الشعار والعلامة التجارية -->
 				<div class="app-branding">
 					<a class="app-logo" href="index.html.htm">
-						<img class="logo-icon me-2" src="assets/images/2.jpeg" alt="logo">
+						<img class="logo-icon me-2" src="~/assets/images/2.jpeg" alt="logo">
 						<span class="logo-text">Nabd Al Hayat</span>
 					</a>
 				</div><!--//app-branding-->
@@ -181,7 +181,7 @@
 
 						<!-- الهوم -->
 						<li class="nav-item">
-							<a class="nav-link" href="index.html.htm">
+							<a class="nav-link" asp-action="Index" asp-controller="Home">
 								<span class="nav-icon"><i class="fas fa-home"></i></span>
 								<span class="nav-link-text">Home</span>
 							</a>
@@ -189,7 +189,7 @@
 
 						<!-- المرضى -->
 						<li class="nav-item">
-							<a class="nav-link" href="patients.html">
+							<a class="nav-link" asp-action="Index" asp-controller="Patient">
 								<span class="nav-icon"><i class="fas fa-user-injured"></i></span>
 								<span class="nav-link-text">Patients</span>
 							</a>
@@ -197,7 +197,7 @@
 
 						<!-- الأخبار -->
 						<li class="nav-item">
-							<a class="nav-link" href="news.html">
+							<a class="nav-link" asp-action="Indexnews" asp-controller="Home">
 								<span class="nav-icon"><i class="fas fa-newspaper"></i></span>
 								<span class="nav-link-text">News and Events</span>
 							</a>
@@ -286,12 +286,15 @@
 	@RenderBody()
 
 
+	@RenderSection("Scripts", required: false)
+
 	<!-- Javascript -->
 	<script src="~/assets/plugins/popper.min.js"></script>
 	<script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 	<script src="~/assets/js/app.js"></script>
     <script src="~/assets/js/index-charts.js"></script>
     <script src="~/assets/js/charts-demo.js"></script>
+
 </body>
 </html>
 

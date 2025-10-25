@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MMedicalLaboratoryAPI.Data;
 using Nabd_AlHayah_Labs.Models;
+using Nabd_AlHayah_Labs.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<MedicalLaboratoryDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();

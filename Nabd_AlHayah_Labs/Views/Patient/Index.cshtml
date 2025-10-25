@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Nabd_AlHayah_Labs.Model.Patient>
+
+<div class="app-wrapper">
+
+
+
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">Patients</h1>
+                </div>
+                <div class="col-auto">
+                    <div class="page-utilities">
+                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                            <div class="col-auto">
+                                <form class="table-search-form row gx-1 align-items-center">
+                                    <div class="col-auto">
+                                        <input type="text" id="search-patients" name="searchpatients" class="form-control search-patients" placeholder="Search">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn app-btn-secondary">Search</button>
+                                    </div>
+                                </form>
+                            </div><!--//col-->
+                            <div class="col-auto">
+                                <a asp-action="Create" class="btn app-btn-primary">
+                                    <i class="fa-solid fa-plus me-1"></i> Add Patient
+                                </a>
+                            </div>
+                        </div><!--//row-->
+                    </div><!--//table-utilities-->
+                </div><!--//col-auto-->
+            </div><!--//row-->
+
+            <div class="row g-3 mb-5">
+                <!-- المرضى بدون Pat_No -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Patients without Pat_No</h6>
+                        <h3 class="fw-bold text-primary">@Model.Count(p => p.Pat_No == null)</h3>
+                        <i class="fa-solid fa-user-slash fa-2x text-primary mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- المرضى مع Pat_No -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Patients with Pat_No</h6>
+                        <h3 class="fw-bold text-success">@Model.Count(p => p.Pat_No != null)</h3>
+                        <i class="fa-solid fa-user-check fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- المواعيد القادمة -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Upcoming Appointments</h6>
+                        <h3 class="fw-bold text-success">@Model.Sum(p => p.Appointments.Count(a => a.AppointmentDate >= DateTime.Now))</h3>
+                        <i class="fa-solid fa-calendar-day fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- العدد الكلي للمرضى -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Patients</h6>
+                        <h3 class="fw-bold text-danger">@Model.Count()</h3>
+                        <i class="fa-solid fa-users fa-2x text-danger mt-2"></i>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+                <div class="app-card-body">
+                    <div class="table-responsive">
+                        <table class="table app-table-hover mb-0 text-left">
+                            <thead>
+                                <tr>
+                                    <th class="cell">Patient ID</th>
+                                    <th class="cell">Full Name</th>
+                                    <th class="cell">Full Name Ar</th>
+                                    <th class="cell">National ID</th>
+                                    <th class="cell">Phone</th>
+                                    <th class="cell">Email</th>
+                                  
+                                    <th class="cell">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var patient in Model)
+                                {
+                                    <tr>
+                                        <td class="cell">#@patient.PatientId</td>
+                                        <td class="cell">@patient.FullNameEn</td>
+                                        <td class="cell">@patient.FullNameAr</td>
+                                        <td class="cell">@patient.NationalId</td>
+                                        <td class="cell">@patient.Phone</td>
+                                        <td class="cell">@patient.Email</td>
+                                  
+                                     
+                                        <td >
+                                            <a asp-action="Details" asp-route-id="@patient.PatientId" class="btn-sm app-btn-secondary me-1" title="تفاصيل صحتي الشخصية">
+                                                <i class="fas fa-file-medical"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn-sm app-btn-warning me-1" title="تعديل بيانات المريض">
+                                                <i class="fas fa-pen-to-square"></i>
+                                            </a>
+                                            <a asp-action="Appointments" asp-route-id="@patient.PatientId" class="btn-sm app-btn-info me-1" title="المواعيد">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </a>
+                                            <a class="btn-sm app-btn-info me-1" asp-action="Details" asp-route-id="@patient.PatientId">
+                                                <i class="fa-solid fa-eye me-2 text-primary"></i> 
+                                            </a>
+                                           
+                                        </td>
+
+                                       
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div><!--//table-responsive-->
+                </div><!--//app-card-body-->
+            </div><!--//app-card-->
+
+            <nav class="app-pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav><!--//app-pagination-->
+
+        </div><!--//container-fluid-->
+    </div><!--//app-content-->
+
+    <footer class="app-footer">
+        <div class="container text-center py-3">
+            <small class="copyright">Designed with <i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="#">Your Team</a></small>
+        </div>
+    </footer><!--//app-footer-->
+
+</div><!--//app-wrapper-->
