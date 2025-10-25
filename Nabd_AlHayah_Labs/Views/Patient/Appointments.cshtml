@@ -1,0 +1,132 @@
+﻿@model Nabd_AlHayah_Labs.ViewModels.AppointmentViewModel
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <a asp-action="Index" class="btn app-btn-light"><i class="fas fa-arrow-left me-1"></i> Back to Patients</a>
+                <h2 class="text-center flex-grow-1 mb-0 fw-bold">@Model.Patient.FullNameEn (@Model.Patient.FullNameAr)</h2>
+                <div style="width: 120px;"></div>
+            </div>
+
+            <!-- Add Appointment -->
+            <div class="app-card shadow-sm rounded-4 p-3 mb-4 bg-white">
+                <h5>Add New Appointment</h5>
+                <form asp-action="AddAppointment" method="post">
+                    <input type="hidden" name="PatientId" value="@Model.Patient.PatientId" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Date & Time</label>
+                            <input type="datetime-local" name="AppointmentDate" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Notes</label>
+                            <input type="text" name="Notes" class="form-control" placeholder="Notes" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Select Packages</label>
+                            <select name="SelectedPackageIds" class="form-select" multiple>
+                                @foreach (var pkg in Model.Packages)
+                                {
+                                    <option value="@pkg.Id">@pkg.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Select Tests</label>
+                            <select name="SelectedTestIds" class="form-select" multiple>
+                                @foreach (var test in Model.Tests)
+                                {
+                                    <option value="@test.Id">@test.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn app-btn-primary"><i class="fas fa-plus me-1"></i> Add Appointment</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+                <div class="app-card-body">
+                    <div class="table-responsive">
+                        <table class="table app-table-hover mb-0 text-left">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date & Time</th>
+                                    <th>Notes</th>
+                                    <th>Packages</th>
+                                    <th>Tests</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appt in Model.Appointments)
+                                {
+                                    <tr>
+                                        <td>@appt.AppointmentId</td>
+                                        <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@appt.Notes</td>
+                                        <td>
+                                            @string.Join(", ", appt.AppointmentPackages.Select(p => p.Id))
+                                        </td>
+                                        <td>
+                                            @string.Join(", ", appt.AppointmentTests.Select(t => t.Id))
+                                        </td>
+                                        <td>
+                                            <a asp-action="EditAppointment" asp-route-id="@appt.AppointmentId" class="btn-sm app-btn-warning me-1">
+                                                <i class="fas fa-pen-to-square"></i>
+                                            </a>
+                                            <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@appt.AppointmentId)">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!Model.Appointments.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">No appointments yet.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function confirmDelete(appointmentId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("DeleteAppointment", "Patient")?appointmentId=' + appointmentId;
+                }
+            });
+        }
+    </script>
+}

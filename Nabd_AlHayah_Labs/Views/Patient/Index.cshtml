@@ -102,13 +102,14 @@
                                   
                                      
                                         <td >
-                                            <a asp-action="Details" asp-route-id="@patient.PatientId" class="btn-sm app-btn-secondary me-1" title="تفاصيل صحتي الشخصية">
-                                                <i class="fas fa-file-medical"></i>
+                                            <a asp-action="HealthMonitoring" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-secondary" title="Health Monitoring">
+                                                <i class="fas fa-notes-medical"></i>
                                             </a>
+
                                             <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn-sm app-btn-warning me-1" title="تعديل بيانات المريض">
                                                 <i class="fas fa-pen-to-square"></i>
                                             </a>
-                                            <a asp-action="Appointments" asp-route-id="@patient.PatientId" class="btn-sm app-btn-info me-1" title="المواعيد">
+                                            <a asp-action="Appointments" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-info me-1" title="المواعيد">
                                                 <i class="fas fa-calendar-check"></i>
                                             </a>
                                             <a class="btn-sm app-btn-info me-1" asp-action="Details" asp-route-id="@patient.PatientId">

@@ -107,5 +107,38 @@ namespace Nabd_AlHayah_Labs.ViewModels
         public List<SelectListItem> Genders { get; set; } = new List<SelectListItem>();
     }
 
+    public class HealthMonitoringViewModel
+    {
+        public Patient Patient { get; set; } = new Patient();
+        public List<HealthMonitoring> HealthMonitorings { get; set; } = new List<HealthMonitoring>();
+
+        // جديد لإضافة/تعديل سجل
+        public HealthMonitoring NewRecord { get; set; } = new HealthMonitoring();
+    }
+
+    public class AppointmentViewModel
+    {
+        public Patient Patient { get; set; } = new Patient();
+
+        public List<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        // كل الباقات المتاحة مع إمكانية اختيارها
+        public List<SelectableItem> Packages { get; set; } = new List<SelectableItem>();
+
+        // كل الفحوصات المتاحة مع إمكانية اختيارها
+        public List<SelectableItem> Tests { get; set; } = new List<SelectableItem>();
+
+        // IDs المحددة عند الإضافة أو التعديل
+        public List<int> SelectedPackageIds { get; set; } = new List<int>();
+        public List<int> SelectedTestIds { get; set; } = new List<int>();
+    }
+
+    public class SelectableItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool Selected { get; set; } = false;
+    }
+
 
 }

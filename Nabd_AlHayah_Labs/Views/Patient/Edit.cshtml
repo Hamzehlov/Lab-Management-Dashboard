@@ -1,6 +1,6 @@
 ﻿@model Nabd_AlHayah_Labs.ViewModels.PatientCreateViewModel
 @{
-    ViewData["Title"] = "Add Patient";
+    ViewData["Title"] = "Edit Patient";
 }
 
 <div class="app-wrapper">
@@ -10,79 +10,94 @@
             <div class="app-card shadow-lg rounded-3 overflow-hidden">
                 <!-- Header -->
                 <div class="app-card-header d-flex justify-content-between align-items-center p-3 border-bottom">
-                    <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Add Patient</h4>
+                    <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i> Edit Patient</h4>
                     <a asp-action="Index" class="btn btn-light btn-sm"><i class="fas fa-arrow-left me-1"></i> Back</a>
                 </div>
 
                 <!-- Body -->
                 <div class="app-card-body p-4">
                     <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Patient.PatientId" />
+
                         <div class="row g-3">
 
                             <div class="col-md-6">
-                                <label class="form-label">Full Name (EN)</label>
+                                <label asp-for="Patient.FullNameEn" class="form-label"></label>
                                 <input asp-for="Patient.FullNameEn" class="form-control" required />
+                                <span asp-validation-for="Patient.FullNameEn" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Full Name (AR)</label>
+                                <label asp-for="Patient.FullNameAr" class="form-label"></label>
                                 <input asp-for="Patient.FullNameAr" class="form-control" required />
+                                <span asp-validation-for="Patient.FullNameAr" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">National ID</label>
+                                <label asp-for="Patient.NationalId" class="form-label"></label>
                                 <input asp-for="Patient.NationalId" class="form-control" />
+                                <span asp-validation-for="Patient.NationalId" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Birth Date</label>
+                                <label asp-for="Patient.BirthDate" class="form-label"></label>
                                 <input asp-for="Patient.BirthDate" class="form-control" type="date" />
+                                <span asp-validation-for="Patient.BirthDate" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Phone</label>
+                                <label asp-for="Patient.Phone" class="form-label"></label>
                                 <input asp-for="Patient.Phone" class="form-control" />
+                                <span asp-validation-for="Patient.Phone" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Email</label>
+                                <label asp-for="Patient.Email" class="form-label"></label>
                                 <input asp-for="Patient.Email" class="form-control" type="email" />
+                                <span asp-validation-for="Patient.Email" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Address (EN)</label>
+                                <label asp-for="Patient.AddressEn" class="form-label"></label>
                                 <input asp-for="Patient.AddressEn" class="form-control" />
+                                <span asp-validation-for="Patient.AddressEn" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Address (AR)</label>
+                                <label asp-for="Patient.AddressAr" class="form-label"></label>
                                 <input asp-for="Patient.AddressAr" class="form-control" />
+                                <span asp-validation-for="Patient.AddressAr" class="text-danger"></span>
                             </div>
-
 
                             <div class="col-md-6">
-                                <label class="form-label">Pat_No</label>
+                                <label asp-for="Patient.Pat_No" class="form-label"></label>
                                 <input asp-for="Patient.Pat_No" class="form-control" type="number" />
+                                <span asp-validation-for="Patient.Pat_No" class="text-danger"></span>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="col-md-6">
                                 <label asp-for="Patient.GenderId" class="form-label">Gender</label>
                                 <select asp-for="Patient.GenderId" asp-items="Model.Genders" class="form-select">
                                     <option value="">-- Select Gender --</option>
                                 </select>
+                                <span asp-validation-for="Patient.GenderId" class="text-danger"></span>
                             </div>
 
-
                             <div class="col-md-6">
-                                <label class="form-label">Password</label>
-                                <input name="Patient.password" class="form-control" type="password"  />
+                                <label asp-for="Password" class="form-label">Password (Leave empty to keep current)</label>
+                                <input asp-for="Password" class="form-control" type="password" autocomplete="new-password" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
 
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Save</button>
-                            <a asp-action="Index" class="btn btn-light ms-2"><i class="fas fa-arrow-left me-1"></i> Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-light ms-2">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
                         </div>
 
                     </form>
@@ -92,3 +107,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
