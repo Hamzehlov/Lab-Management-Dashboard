@@ -1,0 +1,140 @@
+﻿@model Nabd_AlHayah_Labs.ViewModels.PersonalizedHealthViewModel
+@{
+    ViewData["Title"] = "Add Personalized Health Card";
+}
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <div class="app-card shadow-lg rounded-3 overflow-hidden">
+                <div class="app-card-header d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <h4 class="mb-0"><i class="fas fa-id-card me-2"></i> Add Personalized Health Card</h4>
+                    <a asp-action="Index" class="btn btn-light btn-sm"><i class="fas fa-arrow-left me-1"></i> Back</a>
+                </div>
+
+                <div class="app-card-body p-4">
+                    <form asp-action="CreatePersonalizedHealth" method="post" enctype="multipart/form-data">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Card Title (EN)</label>
+                                <input asp-for="CardTitleEn" class="form-control" />
+                                <span asp-validation-for="CardTitleEn" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Card Title (AR)</label>
+                                <input asp-for="CardTitleAr" class="form-control" />
+                                <span asp-validation-for="CardTitleAr" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Card Snippet (EN)</label>
+                                <textarea asp-for="CardSnippetEn" class="form-control"></textarea>
+                                <span asp-validation-for="CardSnippetEn" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Card Snippet (AR)</label>
+                                <textarea asp-for="CardSnippetAr" class="form-control"></textarea>
+                                <span asp-validation-for="CardSnippetAr" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Select Test</label>
+                                <select asp-for="TestId" asp-items="@(new SelectList(Model.AllTests, "TestId", "TestNameAr"))" class="form-select">
+                                    <option value="">-- Select Test --</option>
+                                </select>
+                                <span asp-validation-for="TestId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Test Name (EN)</label>
+                                <input asp-for="TestNameEn" class="form-control" />
+                                <span asp-validation-for="TestNameEn" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Test Name (AR)</label>
+                                <input asp-for="TestNameAr" class="form-control" />
+                                <span asp-validation-for="TestNameAr" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Description (EN)</label>
+                                <textarea asp-for="DescriptionEn" class="form-control"></textarea>
+                                <span asp-validation-for="DescriptionEn" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Description (AR)</label>
+                                <textarea asp-for="DescriptionAr" class="form-control"></textarea>
+                                <span asp-validation-for="DescriptionAr" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Requirements (EN)</label>
+                                <input asp-for="RequirementsEn" class="form-control" />
+                                <span asp-validation-for="RequirementsEn" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Requirements (AR)</label>
+                                <input asp-for="RequirementsAr" class="form-control" />
+                                <span asp-validation-for="RequirementsAr" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Card Image</label>
+                                <input asp-for="CardImageFile" type="file" class="form-control" accept="image/*" onchange="previewCardImage(event)" />
+                                <div class="mt-2 text-center">
+                                    <img id="cardImagePreview" src="#" class="rounded border shadow-sm" style="width:150px; height:150px; object-fit:cover; display:none;" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Test Image</label>
+                                <input asp-for="TestImageFile" type="file" class="form-control" accept="image/*" onchange="previewTestImage(event)" />
+                                <div class="mt-2 text-center">
+                                    <img id="testImagePreview" src="#" class="rounded border shadow-sm" style="width:150px; height:150px; object-fit:cover; display:none;" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Save</button>
+                            <a asp-action="Index" class="btn btn-light ms-2"><i class="fas fa-arrow-left me-1"></i> Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewCardImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('cardImagePreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function previewTestImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('testImagePreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+}

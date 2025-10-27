@@ -26,6 +26,7 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

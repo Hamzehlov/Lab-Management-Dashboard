@@ -99,24 +99,40 @@
                                         <td class="cell">@patient.NationalId</td>
                                         <td class="cell">@patient.Phone</td>
                                         <td class="cell">@patient.Email</td>
-                                  
-                                     
-                                        <td >
+
+
+                                        <td>
+                                            <!-- Health Monitoring -->
                                             <a asp-action="HealthMonitoring" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-secondary" title="Health Monitoring">
                                                 <i class="fas fa-notes-medical"></i>
                                             </a>
 
+                                            <!-- Edit Patient -->
                                             <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn-sm app-btn-warning me-1" title="تعديل بيانات المريض">
                                                 <i class="fas fa-pen-to-square"></i>
                                             </a>
+
+                                            <!-- Appointments -->
                                             <a asp-action="Appointments" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-info me-1" title="المواعيد">
                                                 <i class="fas fa-calendar-check"></i>
                                             </a>
-                                            <a class="btn-sm app-btn-info me-1" asp-action="Details" asp-route-id="@patient.PatientId">
-                                                <i class="fa-solid fa-eye me-2 text-primary"></i> 
+
+                                            <!-- Details -->
+                                            <a class="btn-sm app-btn-info me-1" asp-action="Details" asp-route-id="@patient.PatientId" title="عرض التفاصيل">
+                                                <i class="fa-solid fa-eye me-2 text-primary"></i>
                                             </a>
-                                           
+
+                                            <!-- Results -->
+                                            <a class="btn-sm app-btn-success me-1" asp-controller="ResultsAndInvoices" asp-action="Results" asp-route-patientId="@patient.PatientId" title="النتائج">
+                                                <i class="fas fa-vials"></i>
+                                            </a>
+
+                                            <!-- Invoices -->
+                                            <a class="btn-sm app-btn-dark me-1" asp-controller="ResultsAndInvoices" asp-action="Invoices" asp-route-patientId="@patient.PatientId" title="الفواتير">
+                                                <i class="fas fa-file-invoice-dollar"></i>
+                                            </a>
                                         </td>
+
 
                                        
                                     </tr>

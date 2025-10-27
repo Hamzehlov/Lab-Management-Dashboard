@@ -6,15 +6,18 @@
 
             <!-- Header -->
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <a asp-action="Index" class="btn app-btn-light"><i class="fas fa-arrow-left me-1"></i> Back to Patients</a>
+                <a asp-action="Appointment" asp-route-patientId="@Model.Patient.PatientId" class="btn app-btn-light">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Appointments
+                </a>
                 <h2 class="text-center flex-grow-1 mb-0 fw-bold">@Model.Patient.FullNameEn (@Model.Patient.FullNameAr)</h2>
                 <div style="width: 120px;"></div>
             </div>
 
-            <!-- Add Appointment -->
+            <!-- Edit Appointment -->
             <div class="app-card shadow-sm rounded-4 p-3 mb-4 bg-white">
-                <h5>Add New Appointment</h5>
-                <form asp-action="CreateAppointment" method="post">
+                <h5>Edit Appointment</h5>
+                <form asp-action="EditAppointment" method="post">
+                    <input type="hidden" name="AppointmentId" value="@Model.AppointmentId" />
                     <input type="hidden" name="Patient.PatientId" value="@Model.Patient.PatientId" />
 
                     <div class="row g-3">
@@ -23,7 +26,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Date & Time</label>
                             <input type="datetime-local" name="AppointmentDate" class="form-control"
-                                   value="@Model.AppointmentDate == default ? DateTime.Now.ToString(" yyyy-MM-ddTHH:mm") : Model.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                                   value="@Model.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")" required />
                         </div>
 
                         <!-- Notes -->
@@ -38,9 +41,14 @@
                             <select name="AppointmentTypeId" class="form-select" id="appointmentType">
                                 @foreach (var type in Model.AppointmentTypes)
                                 {
-                                    <option value="@type.Id" selected="@(type.Id == Model.AppointmentTypeId ? "selected" : null)">
-                                        @type.Name
-                                    </option>
+                                    if (type.Id == Model.AppointmentTypeId)
+                                    {
+                                        <option value="@type.Id" selected>@type.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@type.Id">@type.Name</option>
+                                    }
                                 }
                             </select>
                         </div>
@@ -51,9 +59,14 @@
                             <select name="SelectedPackageIds" class="form-select" multiple>
                                 @foreach (var pkg in Model.Packages)
                                 {
-                                    <option value="@pkg.Id" selected="@(Model.SelectedPackageIds.Contains(pkg.Id) ? "selected" : null)">
-                                        @pkg.Name
-                                    </option>
+                                    if (Model.SelectedPackageIds.Contains(pkg.Id))
+                                    {
+                                        <option value="@pkg.Id" selected>@pkg.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@pkg.Id">@pkg.Name</option>
+                                    }
                                 }
                             </select>
                         </div>
@@ -64,9 +77,14 @@
                             <select name="SelectedTestIds" class="form-select" multiple>
                                 @foreach (var test in Model.Tests)
                                 {
-                                    <option value="@test.Id" selected="@(Model.SelectedTestIds.Contains(test.Id) ? "selected" : null)">
-                                        @test.Name
-                                    </option>
+                                    if (Model.SelectedTestIds.Contains(test.Id))
+                                    {
+                                        <option value="@test.Id" selected>@test.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@test.Id">@test.Name</option>
+                                    }
                                 }
                             </select>
                         </div>
@@ -94,72 +112,18 @@
                                 <input type="text" name="TechnicianName" class="form-control" value="@Model.TechnicianName" />
                             </div>
                             <div class="col-md-6 form-check mt-4">
-                                <input type="checkbox" name="IsForAnotherPerson" class="form-check-input" id="isForAnotherPerson" @(Model.IsForAnotherPerson ? "checked" : null) />
+                                <input type="checkbox" name="IsForAnotherPerson" class="form-check-input" id="isForAnotherPerson" @(Model.IsForAnotherPerson ? "checked" : "") />
                                 <label class="form-check-label" for="isForAnotherPerson">Is For Another Person?</label>
                             </div>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="col-12">
-                            <button type="submit" class="btn app-btn-primary"><i class="fas fa-plus me-1"></i> Add Appointment</button>
+                            <button type="submit" class="btn app-btn-primary"><i class="fas fa-save me-1"></i> Save Changes</button>
                         </div>
 
                     </div>
                 </form>
-            </div>
-
-            <!-- Appointments Table -->
-            <!-- Appointments Table -->
-            <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Date & Time</th>
-                                    <th>Notes</th>
-                                    <th>Packages</th>
-                                    <th>Tests</th>
-                                    <th>Appointment Type</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var appt in Model.Appointments)
-                                {
-                                    <tr>
-                                        <td>@appt.AppointmentId</td>
-                                        <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                        <td>@appt.Notes</td>
-                                        <td>@string.Join(", ", appt.AppointmentPackages.Select(p => p.Package.PackageNameEn))</td>
-                                        <td>@string.Join(", ", appt.AppointmentTests.Select(t => t.Test.TestNameEn))</td>
-                                        <td>@appt.AppointmentType?.CodeDescEn</td> <!-- نوع الموعد -->
-                                        <td>@appt.Status?.CodeDescEn</td> <!-- الحالة -->
-                                        <td>
-                                            <a asp-action="EditAppointment" asp-route-id="@appt.AppointmentId" class="btn-sm app-btn-warning me-1">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
-                                            <a asp-action="AppointmentDetails" asp-route-appointmentId="@appt.AppointmentId" class="btn-sm app-btn-info me-1">
-                                                <i class="fa-solid fa-eye me-2 text-primary"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@appt.AppointmentId)">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                                @if (!Model.Appointments.Any())
-                                {
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted">No appointments yet.</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
 
         </div>
@@ -195,7 +159,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '@Url.Action("DeleteAppointmen", "Patient")?appointmentId=' + appointmentId + '&patientId=@Model.Patient.PatientId';
+                    window.location.href = '@Url.Action("Delete", "Patient")?appointmentId=' + appointmentId + '&patientId=@Model.Patient.PatientId';
                 }
             });
         }

@@ -118,19 +118,37 @@ namespace Nabd_AlHayah_Labs.ViewModels
 
     public class AppointmentViewModel
     {
-        public Patient Patient { get; set; } = new Patient();
+        public int AppointmentId { get; set; }
+        public Patient Patient { get; set; }
 
-        public List<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public List<Appointment> Appointments { get; set; } = new();
+        public List<SelectableItem> Packages { get; set; } = new();
+        public List<SelectableItem> Tests { get; set; } = new();
 
-        // كل الباقات المتاحة مع إمكانية اختيارها
-        public List<SelectableItem> Packages { get; set; } = new List<SelectableItem>();
+        // بيانات الموعد
+        public int AppointmentTypeId { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public string? Notes { get; set; }
 
-        // كل الفحوصات المتاحة مع إمكانية اختيارها
-        public List<SelectableItem> Tests { get; set; } = new List<SelectableItem>();
+        // بيانات السحب المنزلي
+        public string? AddressAr { get; set; }
+        public string? AddressEn { get; set; }
+        public string? CityAr { get; set; }
+        public string? CityEn { get; set; }
+        public string? TechnicianName { get; set; }
+        public bool IsForAnotherPerson { get; set; }
 
-        // IDs المحددة عند الإضافة أو التعديل
-        public List<int> SelectedPackageIds { get; set; } = new List<int>();
-        public List<int> SelectedTestIds { get; set; } = new List<int>();
+        public Code? Status { get; set; }   // <--- هذه الخاصية مفقودة
+
+
+
+        // الفحوصات والباقات المختارة
+        public List<int> SelectedTestIds { get; set; } = new();
+        public List<int> SelectedPackageIds { get; set; } = new();
+
+
+        public List<SelectableItem> AppointmentTypes { get; set; } = new();
+
     }
 
     public class SelectableItem

@@ -1,0 +1,105 @@
+﻿@model IEnumerable<Nabd_AlHayah_Labs.Model.PersonalizedHealth>
+
+@{
+    ViewData["Title"] = "Personalized Health";
+}
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <!-- Header و Search + Add -->
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">Personalized Health</h1>
+                </div>
+                <div class="col-auto">
+                    <div class="page-utilities">
+                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                            <div class="col-auto">
+                                <form class="table-search-form row gx-1 align-items-center">
+                                    <div class="col-auto">
+                                        <input type="text" id="search-personalized" name="searchpersonalized" class="form-control" placeholder="Search">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn app-btn-secondary">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-auto">
+                                <a asp-action="CreatePersonalizedHealth" class="btn app-btn-primary">
+                                    <i class="fa-solid fa-plus me-1"></i> Add Personalized Health
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Records</h6>
+                        <h3 class="fw-bold text-primary">@Model.Count()</h3>
+                        <i class="fas fa-id-card fa-2x text-primary mt-2"></i>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Tests Linked</h6>
+                        <h3 class="fw-bold text-success">@Model.Count(p => p.Test != null)</h3>
+                        <i class="fas fa-vial fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول البيانات -->
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+                <div class="app-card-body">
+                    <div class="table-responsive">
+                        <table class="table app-table-hover mb-0 text-left">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Card Image</th>
+                                    <th>Title (AR/EN)</th>
+                                    <th>Test Name</th>
+                                    <th>Requirements (AR/EN)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td>
+                                            @if (item.CardImage != null)
+                                            {
+                                                var img = Convert.ToBase64String(item.CardImage);
+                                                <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
+                                            }
+                                        </td>
+                                        <td>@item.CardTitleAr / @item.CardTitleEn</td>
+                                        <td>@(item.Test != null ? item.Test.TestNameAr + " / " + item.Test.TestNameEn : "-")</td>
+                                        <td>@item.RequirementsAr / @item.RequirementsEn</td>
+                                        <td>
+                                            <a asp-action="EditPersonalizedHealth" asp-route-id="@item.Id" class="btn-sm app-btn-warning me-1">
+                                                <i class="fas fa-pen-to-square"></i>
+                                            </a>
+                                            <form asp-action="DeletePersonalizedHealth" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                                <button class="btn-sm app-btn-danger"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

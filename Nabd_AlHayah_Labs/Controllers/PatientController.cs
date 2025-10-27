@@ -307,96 +307,383 @@ namespace Nabd_AlHayah_Labs.Controllers
 
 
 
-        public IActionResult Appointments(int patientId)
+ 
+        public async Task<IActionResult> Appointments(int patientId)
         {
-            var patient = _context.Patients.FirstOrDefault(p => p.PatientId == patientId);
-            if (patient == null) return NotFound();
+            // 🧾 جلب بيانات المريض
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(p => p.PatientId == patientId);
 
-            var appointments = _context.Appointments
-                                .Where(a => a.PatientId == patientId)
-                                .OrderByDescending(a => a.AppointmentDate)
-                                .ToList();
+            if (patient == null)
+                return NotFound("المريض غير موجود.");
 
-            var packages = _context.HealthPackages
-                            .Select(p => new SelectableItem { Id = p.PackageId, Name = p.DescriptionEn })
-                            .ToList();
+            // 📅 جلب المواعيد المرتبطة بالمريض
+            var appointments = await _context.Appointments
+                .Include(a => a.AppointmentType)
+                .Include(a => a.AppointmentTests).ThenInclude(t => t.Test)
+                .Include(a => a.AppointmentPackages).ThenInclude(p => p.Package)
+                .Include(a => a.HomeSamplings)
+                .Where(a => a.PatientId == patientId)
+                .OrderByDescending(a => a.AppointmentDate)
+                .ToListAsync();
 
-            var tests = _context.Tests
-                            .Select(t => new SelectableItem { Id = t.TestId, Name = t.TestNameEn })
-                            .ToList();
+            // 🧪 الفحوصات المتاحة
+            var tests = await _context.Tests
+                .Select(t => new SelectableItem { Id = t.TestId, Name = t.TestNameEn })
+                .ToListAsync();
 
+            // 🎁 الباقات المتاحة
+            var packages = await _context.HealthPackages
+                .Select(p => new SelectableItem { Id = p.PackageId, Name = p.PackageNameEn })
+                .ToListAsync();
+
+            // 🔸 أنواع المواعيد
+            var appointmentTypes = await _context.Codes
+                .Where(c => c.ParentId==8)
+                .Select(c => new SelectableItem
+                {
+                    Id = c.Id,
+                    Name = $"{c.CodeDescEn} / {c.CodeDescAr}"
+                })
+                .ToListAsync();
+
+            // 📦 تعبئة الـ ViewModel
             var viewModel = new AppointmentViewModel
             {
                 Patient = patient,
                 Appointments = appointments,
+                Tests = tests,
                 Packages = packages,
-                Tests = tests
+                AppointmentTypes = appointmentTypes
             };
 
             return View(viewModel);
         }
 
 
-        // POST: Add new appointment
+        // ==================================
+        // 🔹 إنشاء موعد جديد (إنشاء + فحوصات + باقات + زيارة منزلية)
+        // ==================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-
-        public IActionResult AddAppointment(AppointmentViewModel model)
+        public async Task<IActionResult> CreateAppointment(AppointmentViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
+                TempData["Error"] = "يرجى التحقق من البيانات المدخلة.";
+                return RedirectToAction("Appointment", new { patientId = model.Patient.PatientId });
+            }
+
+            try
+            {
+                // 🗓️ إنشاء الموعد الأساسي
                 var appointment = new Appointment
                 {
                     PatientId = model.Patient.PatientId,
-                    AppointmentDate = DateTime.Now,
-                    CreatedAt = DateTime.Now
+                    AppointmentDate = model.AppointmentDate,
+                    AppointmentTypeId = model.AppointmentTypeId,
+                    Notes = model.Notes,
+                    CreatedAt = DateTime.Now,
+                    StatusId = 5
                 };
 
-                // ربط الباقات والفحوصات مباشرة عبر Navigation Properties
-                foreach (var pkgId in model.SelectedPackageIds)
+                _context.Appointments.Add(appointment);
+                await _context.SaveChangesAsync();
+
+                // 🏠 في حال الموعد منزلي (ID = 10)
+                var isHomeSampling = model.AppointmentTypeId == 10;
+                if (isHomeSampling)
                 {
-                    var package = _context.AppointmentPackages.FirstOrDefault(p => p.Id == pkgId);
-                    if (package != null)
+                    var homeSampling = new HomeSampling
                     {
-                        appointment.AppointmentPackages.Add(package);
-                    }
+                        AppointmentId = appointment.AppointmentId,
+                        AddressAr = model.AddressAr ?? "غير محدد",
+                        AddressEn = model.AddressEn,
+                        CityAr = model.CityAr,
+                        CityEn = model.CityEn,
+                        TechnicianName = model.TechnicianName,
+                        VisitTime = model.AppointmentDate,
+                        IsForAnotherPerson = model.IsForAnotherPerson
+                    };
+
+                    _context.HomeSamplings.Add(homeSampling);
                 }
 
+                // 🧪 إضافة الفحوصات
                 foreach (var testId in model.SelectedTestIds)
                 {
-                    var test = _context.AppointmentTests.FirstOrDefault(t => t.Id == testId);
-                    if (test != null)
+                    _context.AppointmentTests.Add(new AppointmentTest
                     {
-                        appointment.AppointmentTests.Add(test);
-                    }
+                        AppointmentId = appointment.AppointmentId,
+                        TestId = testId
+                    });
                 }
 
-                _context.Appointments.Add(appointment);
-                _context.SaveChanges();
+                // 🎁 إضافة الباقات
+                foreach (var packageId in model.SelectedPackageIds)
+                {
+                    _context.AppointmentPackages.Add(new AppointmentPackage
+                    {
+                        AppointmentId = appointment.AppointmentId,
+                        PackageId = packageId
+                    });
+                }
 
-                return RedirectToAction("Appointments", new { patientId = model.Patient.PatientId });
+                await _context.SaveChangesAsync();
+
+                // ✅ إشعار النجاح
+                TempData["Success"] = isHomeSampling
+                    ? "تم حجز الموعد المنزلي بنجاح."
+                    : "تم حجز الموعد في المختبر بنجاح.";
+
+                return RedirectToAction("Appointment", new { patientId = model.Patient.PatientId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"حدث خطأ أثناء إنشاء الموعد: {ex.Message}";
+                return RedirectToAction("Appointment", new { patientId = model.Patient.PatientId });
+            }
+        }
+
+
+        // ==================================
+        // 🔹 تعديل موعد قائم
+        // ==================================
+        // GET: Load appointment for editing
+        public async Task<IActionResult> EditAppointment(int id)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.AppointmentTests)
+                .Include(a => a.AppointmentPackages)
+                .Include(a => a.HomeSamplings)
+                .Include(a => a.Patient)
+                .FirstOrDefaultAsync(a => a.AppointmentId == id);
+
+            if (appointment == null)
+            {
+                TempData["Error"] = "الموعد غير موجود.";
+                return RedirectToAction("Index", new { patientId = 0 }); // أو إعادة التوجيه للصفحة المناسبة
+            }
+
+            // جلب الفحوصات والباقات وأنواع الموعد
+            var tests = await _context.Tests
+                .Select(t => new SelectableItem { Id = t.TestId, Name = t.TestNameEn })
+                .ToListAsync();
+
+            var packages = await _context.HealthPackages
+                .Select(p => new SelectableItem { Id = p.PackageId, Name = p.PackageNameEn })
+                .ToListAsync();
+
+            var appointmentTypes = await _context.Codes
+                .Where(c => c.ParentId == 8)
+                .Select(c => new SelectableItem { Id = c.Id, Name = c.CodeDescEn + " / " + c.CodeDescAr })
+                .ToListAsync();
+
+            // تعبئة ViewModel
+            var model = new AppointmentViewModel
+            {
+                AppointmentId = appointment.AppointmentId,
+                Patient = appointment.Patient,
+                AppointmentDate = appointment.AppointmentDate,
+                AppointmentTypeId = (int)appointment.AppointmentTypeId,
+                Notes = appointment.Notes,
+                SelectedTestIds = appointment.AppointmentTests.Select(t => t.TestId).ToList(),
+                SelectedPackageIds = appointment.AppointmentPackages.Select(p => p.PackageId).ToList(),
+                Tests = tests,
+                Packages = packages,
+                AppointmentTypes = appointmentTypes
+            };
+
+            // تعبئة حقول السحب المنزلي إذا موجود
+            var home = appointment.HomeSamplings.FirstOrDefault();
+            if (home != null)
+            {
+                model.AddressAr = home.AddressAr;
+                model.AddressEn = home.AddressEn;
+                model.CityAr = home.CityAr;
+                model.CityEn = home.CityEn;
+                model.TechnicianName = home.TechnicianName;
+                model.IsForAnotherPerson =  (bool) home.IsForAnotherPerson;
             }
 
             return View(model);
         }
 
-        // GET: Delete appointment
-        public IActionResult DeleteAppointment(int appointmentId)
+
+
+
+
+        // POST: Edit appointment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAppointment(AppointmentViewModel model)
         {
-            var appointment = _context.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
-            if (appointment == null) return NotFound();
+            if (ModelState.IsValid)
+            {
+                TempData["Error"] = "يرجى التحقق من البيانات.";
+                return RedirectToAction("EditAppointment", new { id = model.AppointmentId });
+            }
 
-            int patientId = appointment.PatientId ?? 0;
+            var appointment = await _context.Appointments
+                .Include(a => a.AppointmentTests)
+                .Include(a => a.AppointmentPackages)
+                .Include(a => a.HomeSamplings)
+                .Include(a => a.Patient)
+                .FirstOrDefaultAsync(a => a.AppointmentId == model.AppointmentId);
+
+            if (appointment == null)
+            {
+                TempData["Error"] = "الموعد غير موجود.";
+                return RedirectToAction("Index", new { patientId = model.Patient.PatientId });
+            }
+
+            try
+            {
+                // تحديث بيانات الموعد
+                appointment.AppointmentDate = model.AppointmentDate;
+                appointment.AppointmentTypeId = model.AppointmentTypeId;
+                appointment.Notes = model.Notes;
+                appointment.StatusId = 5;
+                // حذف القديم من الفحوصات والباقات
+                _context.AppointmentTests.RemoveRange(appointment.AppointmentTests);
+                _context.AppointmentPackages.RemoveRange(appointment.AppointmentPackages);
+
+                // إضافة الجديد
+                foreach (var testId in model.SelectedTestIds)
+                    _context.AppointmentTests.Add(new AppointmentTest { AppointmentId = appointment.AppointmentId, TestId = testId });
+
+                foreach (var packageId in model.SelectedPackageIds)
+                    _context.AppointmentPackages.Add(new AppointmentPackage { AppointmentId = appointment.AppointmentId, PackageId = packageId });
+
+                // 🏠 التحقق من الموعد المنزلي
+                var isHomeSampling = appointment.AppointmentTypeId == 10;
+                var homeSampling = await _context.HomeSamplings
+                    .FirstOrDefaultAsync(h => h.AppointmentId == appointment.AppointmentId);
+
+                if (isHomeSampling)
+                {
+                    if (homeSampling == null)
+                    {
+                        _context.HomeSamplings.Add(new HomeSampling
+                        {
+                            AppointmentId = appointment.AppointmentId,
+                            AddressAr = model.AddressAr,
+                            AddressEn = model.AddressEn,
+                            CityAr = model.CityAr,
+                            CityEn = model.CityEn,
+                            TechnicianName = model.TechnicianName,
+                            VisitTime = model.AppointmentDate,
+                            IsForAnotherPerson = model.IsForAnotherPerson
+                        });
+                    }
+                    else
+                    {
+                        homeSampling.AddressAr = model.AddressAr;
+                        homeSampling.AddressEn = model.AddressEn;
+                        homeSampling.CityAr = model.CityAr;
+                        homeSampling.CityEn = model.CityEn;
+                        homeSampling.TechnicianName = model.TechnicianName;
+                        homeSampling.VisitTime = model.AppointmentDate;
+                        homeSampling.IsForAnotherPerson = model.IsForAnotherPerson;
+                    }
+                }
+                else
+                {
+                    // حذف الموعد المنزلي إن وجد
+                    if (homeSampling != null)
+                        _context.HomeSamplings.Remove(homeSampling);
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "تم تعديل الموعد بنجاح.";
+                return RedirectToAction("Appointments", new { patientId = model.Patient.PatientId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"حدث خطأ أثناء تعديل الموعد: {ex.Message}";
+                return RedirectToAction("EditAppointment", new { id = model.AppointmentId });
+            }
+        }
+
+
+
+        // ==================================
+        // 🔹 حذف موعد
+        // ==================================
+        public async Task<IActionResult> DeleteAppointment(int appointmentId, int patientId)
+        {
+            var appointment = await _context.Appointments.FindAsync(appointmentId);
+
+            if (appointment == null)
+            {
+                TempData["Error"] = "الموعد غير موجود.";
+                return RedirectToAction("Appointment", new { patientId });
+            }
+
             _context.Appointments.Remove(appointment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return RedirectToAction("Appointments", new { patientId });
+            TempData["Success"] = "تم حذف الموعد بنجاح.";
+            return RedirectToAction("Appointment", new { patientId });
         }
 
 
 
 
+        // GET: عرض تفاصيل الموعد
+        public async Task<IActionResult> AppointmentDetails(int appointmentId)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.AppointmentType) // نوع الموعد
+                .Include(a => a.AppointmentTests).ThenInclude(at => at.Test) // الفحوصات
+                .Include(a => a.AppointmentPackages).ThenInclude(ap => ap.Package) // الباقات
+                .Include(a => a.HomeSamplings) // السحب المنزلي
+                .Include(a => a.Patient) // بيانات المريض
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
+            if (appointment == null)
+            {
+                TempData["Error"] = "الموعد غير موجود.";
+                return RedirectToAction("Appointment", new { patientId = 0 }); // عدل إذا تريد إعادة المريض
+            }
+
+            var model = new AppointmentViewModel
+            {
+                AppointmentId = appointment.AppointmentId,
+                Patient = appointment.Patient,
+                AppointmentDate = appointment.AppointmentDate,
+                AppointmentTypeId =(int) appointment.AppointmentTypeId,
+                Notes = appointment.Notes,
+                SelectedTestIds = appointment.AppointmentTests.Select(t => t.TestId).ToList(),
+                SelectedPackageIds = appointment.AppointmentPackages.Select(p => p.PackageId).ToList(),
+                AddressAr = appointment.HomeSamplings.FirstOrDefault()?.AddressAr,
+                AddressEn = appointment.HomeSamplings.FirstOrDefault()?.AddressEn,
+                CityAr = appointment.HomeSamplings.FirstOrDefault()?.CityAr,
+                CityEn = appointment.HomeSamplings.FirstOrDefault()?.CityEn,
+                TechnicianName = appointment.HomeSamplings.FirstOrDefault()?.TechnicianName,
+                IsForAnotherPerson = appointment.HomeSamplings.FirstOrDefault()?.IsForAnotherPerson ?? false,
+                AppointmentTypes = await _context.Codes
+                    .Where(c => c.ParentId == 10)
+                    .Select(c => new SelectableItem
+                    {
+                        Id = c.Id,
+                        Name = c.CodeDescEn + " / " + c.CodeDescAr
+                    }).ToListAsync(),
+                Packages = appointment.AppointmentPackages.Select(ap => new SelectableItem
+                {
+                    Id = ap.PackageId,
+                    Name = ap.Package.PackageNameEn
+                }).ToList(),
+                Tests = appointment.AppointmentTests.Select(at => new SelectableItem
+                {
+                    Id = at.TestId,
+                    Name = at.Test.TestNameEn
+                }).ToList()
+            };
+
+            return View(model);
+        }
 
 
 

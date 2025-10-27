@@ -1,0 +1,49 @@
+﻿@model List<Nabd_AlHayah_Labs.ViewModels.LabResultViewModel>
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h1 class="mb-4">Lab Results for @ViewBag.PatientName</h1>
+
+            <a asp-action="Index" class="btn btn-secondary mb-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to Patients
+            </a>
+
+            @foreach (var result in Model)
+            {
+                <div class="card shadow-sm mb-4 p-3">
+                    <h4>Result for @result.Pat_FName</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Patient No:</strong> @result.Pat_No</p>
+                            <p><strong>Patient ID:</strong> @result.Pat_Id</p>
+                            <p><strong>Full Name:</strong> @result.Pat_FName</p>
+                            <p><strong>Date of Birth:</strong> @result.DateOfBirthFormatted</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Gender:</strong> @result.Pat_Gender</p>
+                            <p><strong>Mobile Number:</strong> @result.Pat_MobileNumber1</p>
+                            <p>
+                                <strong>Result File:</strong>
+                                @if (!string.IsNullOrEmpty(result.ResultLink))
+                                {
+                                    <a href="@result.ResultLink" target="_blank" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-file-pdf me-1"></i> View
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <a asp-action="Index" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to Patients
+            </a>
+        </div>
+    </div>
+</div>

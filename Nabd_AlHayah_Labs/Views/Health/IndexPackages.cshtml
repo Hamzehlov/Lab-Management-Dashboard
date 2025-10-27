@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Nabd_AlHayah_Labs.Model.HealthPackage>
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <!-- Header و Search + Add -->
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">Health Packages</h1>
+                </div>
+                <div class="col-auto">
+                    <div class="page-utilities">
+                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                            <div class="col-auto">
+                                <form class="table-search-form row gx-1 align-items-center">
+                                    <div class="col-auto">
+                                        <input type="text" id="search-packages" name="searchpackages" class="form-control" placeholder="Search">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn app-btn-secondary">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-auto">
+                                <a asp-action="CreatePackage" class="btn app-btn-primary">
+                                    <i class="fa-solid fa-plus me-1"></i> Add Package
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات الباقات -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Packages</h6>
+                        <h3 class="fw-bold text-primary">@Model.Count()</h3>
+                        <i class="fas fa-box fa-2x text-primary mt-2"></i>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Tests in Packages</h6>
+                        <h3 class="fw-bold text-success">@Model.Sum(p => p.PackageTests.Count)</h3>
+                        <i class="fas fa-vial fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول الباقات -->
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+                <div class="app-card-body">
+                    <div class="table-responsive">
+                        <table class="table app-table-hover mb-0 text-left">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Image</th>
+                                    <th>Name (AR/EN)</th>
+                                    <th>Tests Count</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pkg in Model)
+                                {
+                                    <tr>
+                                        <td>@pkg.PackageId</td>
+                                        <td>
+                                            @if (pkg.PackageImage != null)
+                                            {
+                                                var img = Convert.ToBase64String(pkg.PackageImage);
+                                                <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
+                                            }
+                                        </td>
+                                        <td>@pkg.PackageNameAr / @pkg.PackageNameEn</td>
+                                        <td>@pkg.PackageTests.Count</td>
+                                        <td>@pkg.Price.ToString("C")</td>
+                                        <td>
+                                            <a asp-action="EditPackage" asp-route-id="@pkg.PackageId" class="btn-sm app-btn-warning me-1">
+                                                <i class="fas fa-pen-to-square"></i>
+                                            </a>
+                                            <form asp-action="DeletePackage" asp-route-id="@pkg.PackageId" method="post" style="display:inline;">
+                                                <button class="btn-sm app-btn-danger"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
