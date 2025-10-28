@@ -361,9 +361,7 @@ namespace Nabd_AlHayah_Labs.Controllers
         }
 
 
-        // ==================================
-        // 🔹 إنشاء موعد جديد (إنشاء + فحوصات + باقات + زيارة منزلية)
-        // ==================================
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAppointment(AppointmentViewModel model)
@@ -446,10 +444,7 @@ namespace Nabd_AlHayah_Labs.Controllers
         }
 
 
-        // ==================================
-        // 🔹 تعديل موعد قائم
-        // ==================================
-        // GET: Load appointment for editing
+    
         public async Task<IActionResult> EditAppointment(int id)
         {
             var appointment = await _context.Appointments
@@ -608,9 +603,7 @@ namespace Nabd_AlHayah_Labs.Controllers
 
 
 
-        // ==================================
-        // 🔹 حذف موعد
-        // ==================================
+    
         public async Task<IActionResult> DeleteAppointment(int appointmentId, int patientId)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);

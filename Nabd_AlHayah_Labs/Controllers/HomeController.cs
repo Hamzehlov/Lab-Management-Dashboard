@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MMedicalLaboratoryAPI.Data;
 using Nabd_AlHayah_Labs.Model;
 using Nabd_AlHayah_Labs.Models;
+using Nabd_AlHayah_Labs.ViewModels;
 using System.Diagnostics;
 
 namespace Nabd_AlHayah_Labs.Controllers
@@ -27,9 +28,28 @@ namespace Nabd_AlHayah_Labs.Controllers
 
         public IActionResult Index()
         {
-            return View();
-        }
+            // إجمالي المرضى
+            int totalPatients = _context.Patients.Count();
 
+            // إجمالي المواعيد
+            int totalAppointments = _context.Appointments.Where(x=>x.StatusId==7).Count();
+
+            // المرضى الذين لديهم رقم ملف (Pat_No موجود)
+            int patientsWithFileNumber = _context.Patients.Count(p => p.Pat_No != null);
+
+            // المرضى الذين لا يملكون رقم ملف (Pat_No غير موجود)
+            int patientsWithoutFileNumber = _context.Patients.Count(p => p.Pat_No == null);
+
+            var model = new DashboardViewModel
+            {
+                TotalPatients = totalPatients,
+                TotalAppointments = totalAppointments,
+                ApprovedPatients = patientsWithFileNumber,
+                PendingPatients = patientsWithoutFileNumber
+            };
+
+            return View(model);
+        }
         public IActionResult Privacy()
         {
             return View();

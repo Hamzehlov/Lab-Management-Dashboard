@@ -1,4 +1,5 @@
-﻿
+﻿@model Nabd_AlHayah_Labs.ViewModels.DashboardViewModel
+
 <style>
     /* دائرة الإشعار */
     /* دائرة الإشعار داخل الكارد */
@@ -48,11 +49,12 @@
 </div><!--//app-card-->
             <div class="row g-4 mb-4">
 
+                <!-- Total Patients -->
                 <div class="col-6 col-lg-3">
                     <div class="app-card app-card-stat shadow-sm h-100">
                         <div class="app-card-body p-3 p-lg-4">
                             <h4 class="stats-type mb-1">Total Patients</h4>
-                            <div class="stats-figure">9</div>
+                            <div class="stats-figure">@Model.TotalPatients</div>
                             <div class="stats-meta text-primary">
                                 <i class="fas fa-users me-1"></i> All Patients
                             </div>
@@ -60,37 +62,40 @@
                     </div>
                 </div>
 
+                <!-- Pending Appointments -->
                 <div class="col-6 col-lg-3">
                     <div class="app-card app-card-stat shadow-sm h-100">
                         <div class="app-card-body p-3 p-lg-4">
-                            <h4 class="stats-type mb-1">Total Appointments</h4>
-                            <div class="stats-figure">30</div>
-                            <div class="stats-meta text-info">
-                                <i class="fas fa-calendar-check me-1"></i> Scheduled
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-lg-3">
-                    <div class="app-card app-card-stat shadow-sm h-100">
-                        <div class="app-card-body p-3 p-lg-4">
-                            <h4 class="stats-type mb-1">Approved Patients</h4>
-                            <div class="stats-figure">10%</div>
-                            <div class="stats-meta text-success">
-                                <i class="fas fa-check-circle me-1"></i> Approved
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-lg-3">
-                    <div class="app-card app-card-stat shadow-sm h-100">
-                        <div class="app-card-body p-3 p-lg-4">
-                            <h4 class="stats-type mb-1">Pending Patients</h4>
-                            <div class="stats-figure">20</div>
+                            <h4 class="stats-type mb-1">Pending Appointments</h4>
+                            <div class="stats-figure">@Model.TotalAppointments</div>
                             <div class="stats-meta text-warning">
-                                <i class="fas fa-hourglass-half me-1"></i> Pending
+                                <i class="fas fa-hourglass-half me-1"></i> Waiting Appointments
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approved Patients (Have File Number) -->
+                <div class="col-6 col-lg-3">
+                    <div class="app-card app-card-stat shadow-sm h-100">
+                        <div class="app-card-body p-3 p-lg-4">
+                            <h4 class="stats-type mb-1">Patients With File Number</h4>
+                            <div class="stats-figure">@Model.ApprovedPatients</div>
+                            <div class="stats-meta text-success">
+                                <i class="fas fa-file-medical me-1"></i> Approved Patients
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Not Approved Patients (Without File Number) -->
+                <div class="col-6 col-lg-3">
+                    <div class="app-card app-card-stat shadow-sm h-100">
+                        <div class="app-card-body p-3 p-lg-4">
+                            <h4 class="stats-type mb-1">Patients Without File Number</h4>
+                            <div class="stats-figure">@(Model.TotalPatients - Model.ApprovedPatients)</div>
+                            <div class="stats-meta text-danger">
+                                <i class="fas fa-user-times me-1"></i> Not Approved
                             </div>
                         </div>
                     </div>
@@ -104,7 +109,77 @@
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
 
-                        <span class="notification-badge">100</span>
+                        <!-- عدد المرضى بدون رقم ملف -->
+                        <span class="notification-badge">@Model.PendingPatients</span>
+
+                        <!-- عنوان الكارد -->
+                        <div class="app-card-header p-3 border-bottom-0">
+                            <div class="row align-items-center gx-3">
+                                <div class="col-auto">
+                                    <div class="app-icon-holder text-primary">
+                                        <i class="fas fa-user-injured fa-2x"></i>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <h4 class="app-card-title">Patient Requests</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- وصف الكارد -->
+                        <div class="app-card-body px-4">
+                            <div class="intro">
+                                Requests for patients who have not yet been assigned a file number.
+                            </div>
+                        </div>
+
+                        <!-- الفوتر -->
+                        <div class="app-card-footer p-4 mt-auto">
+                            <a class="btn app-btn-secondary" href="#">View Requests</a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- كارد المواعيد المنتظرة -->
+                <div class="col-12 col-lg-4">
+                    <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
+                        <span class="notification-badge">@Model.TotalAppointments</span>
+
+                        <div class="app-card-header p-3 border-bottom-0">
+                            <div class="row align-items-center gx-3">
+                                <div class="col-auto">
+                                    <div class="app-icon-holder text-info">
+                                        <i class="fas fa-calendar-check fa-2x"></i>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <h4 class="app-card-title">Pending Appointments</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="app-card-body px-4">
+                            <div class="intro">
+                                Pending appointments that are scheduled but not yet completed.
+                            </div>
+                        </div>
+
+                        <div class="app-card-footer p-4 mt-auto">
+                            <a class="btn app-btn-secondary" href="#">View Appointments</a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+                   <div class="col-12 col-lg-4">
+                    <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
+
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -114,7 +189,7 @@
                                     </div>
                                 </div>
                                 <div class="col-auto">
-                                    <h4 class="app-card-title">Patients</h4>
+                                    <h4 class="app-card-title">All Patients</h4>
                                 </div>
                             </div>
                         </div>
@@ -122,15 +197,43 @@
                             <div class="intro">Manage patient records and personal information efficiently.</div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Patients</a>
+                            <a class="btn app-btn-secondary" asp-controller="Patient" asp-action="Index">View Patients</a>
                         </div>
                     </div>
                 </div>
 
+
+
+                <div class="col-12 col-lg-4">
+                    <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
+
+                        <div class="app-card-header p-3 border-bottom-0">
+                            <div class="row align-items-center gx-3">
+                                <div class="col-auto">
+                                    <div class="app-icon-holder text-info">
+                                        <i class="fas fa-calendar-check fa-2x"></i>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <h4 class="app-card-title">All Appointments</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="app-card-body px-4">
+                            <div class="intro">Schedule and manage patient appointments efficiently.</div>
+                        </div>
+                        <div class="app-card-footer p-4 mt-auto">
+                            <a class="btn app-btn-secondary" href="#">View Appointments</a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
                 <!-- كارد المستخدمين -->
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">10</span>
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -153,7 +256,7 @@
                     </div>
                 </div>
 
-                <!-- كارد نتائج المستخدمين -->
+           @*      <!-- كارد نتائج المستخدمين -->
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
                         <span class="notification-badge">30</span>
@@ -204,37 +307,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- كارد المواعيد -->
-                <div class="col-12 col-lg-4">
-                    <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">8</span>
-
-                        <div class="app-card-header p-3 border-bottom-0">
-                            <div class="row align-items-center gx-3">
-                                <div class="col-auto">
-                                    <div class="app-icon-holder text-info">
-                                        <i class="fas fa-calendar-check fa-2x"></i>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <h4 class="app-card-title">Appointments</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="app-card-body px-4">
-                            <div class="intro">Schedule and manage patient appointments efficiently.</div>
-                        </div>
-                        <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Appointments</a>
-                        </div>
-                    </div>
-                </div>
-
+ *@
+              
                 <!-- كارد الأخبار -->
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">9</span>
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -244,7 +321,7 @@
                                     </div>
                                 </div>
                                 <div class="col-auto">
-                                    <h4 class="app-card-title">News</h4>
+                                    <h4 class="app-card-title">Events and News</h4>
                                 </div>
                             </div>
                         </div>
@@ -252,13 +329,13 @@
                             <div class="intro">Stay updated with the latest medical and lab news.</div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View News</a>
+                            <a class="btn app-btn-secondary" asp-action="Indexnews" asp-controller="Home">View News</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- كارد الايفنت / الأحداث -->
-                <div class="col-12 col-lg-4">
+@*                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
                         <span class="notification-badge">24</span>
 
@@ -282,11 +359,11 @@
                         </div>
                     </div>
                 </div>
-
+ *@
                 <!-- كارد باقات الفحص -->
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">17</span>
+                       
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -304,7 +381,7 @@
                             <div class="intro">Manage all laboratory test packages for patients.</div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Packages</a>
+                            <a class="btn app-btn-secondary" asp-controller="Health" asp-action="IndexPackages">View Packages</a>
                         </div>
                     </div>
                 </div>
@@ -312,7 +389,7 @@
                 <!-- كارد الفحوصات -->
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">15</span>
+                    
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -330,14 +407,13 @@
                             <div class="intro">View and manage all laboratory tests available.</div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Tests</a>
+                            <a class="btn app-btn-secondary" asp-controller="Health" asp-action="IndexTests">View Tests</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
-                        <span class="notification-badge">4</span>
 
                         <div class="app-card-header p-3 border-bottom-0">
                             <div class="row align-items-center gx-3">
@@ -357,7 +433,7 @@
                             </div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="personal-health.html">View Health</a>
+                            <a class="btn app-btn-secondary" asp-controller="Health" asp-action="IndexPersonalizedHealth">View Health</a>
                         </div>
                     </div>
                 </div>

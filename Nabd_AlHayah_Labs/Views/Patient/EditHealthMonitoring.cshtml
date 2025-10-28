@@ -48,6 +48,13 @@
                                 <span asp-validation-for="RecommendationDetailsAr" class="text-danger"></span>
                             </div>
 
+                            <!-- حقل جديد BasedOnTests -->
+                            <div class="col-12">
+                                <label asp-for="BasedOnTests" class="form-label">Based on Tests (Optional)</label>
+                                <input asp-for="BasedOnTests" class="form-control" placeholder="Enter test references or notes" />
+                                <span asp-validation-for="BasedOnTests" class="text-danger"></span>
+                            </div>
+
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i> Save Changes

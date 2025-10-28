@@ -1,0 +1,197 @@
+﻿@model Nabd_AlHayah_Labs.ViewModels.AppointmentViewModel
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <!-- عنوان الصفحة -->
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">Appointments</h1>
+                </div>
+                <div class="col-auto">
+                    <div class="page-utilities">
+                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                            <div class="col-auto">
+                                <form method="get" class="table-search-form row gx-1 align-items-center">
+                                    <div class="col-auto">
+                                        <input type="text" name="search" class="form-control" placeholder="Search">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn app-btn-secondary">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إحصائيات المواعيد -->
+            <div class="row g-3 mb-5">
+                <!-- إجمالي المواعيد -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Appointments</h6>
+                        <h3 class="fw-bold text-primary">@Model.Appointments.Count()</h3>
+                        <i class="fa-solid fa-calendar-check fa-2x text-primary mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- المؤكدة -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Confirmed Appointments</h6>
+                        <h3 class="fw-bold text-success">@Model.Appointments.Count(a => a.StatusId == 5)</h3>
+                        <i class="fa-solid fa-check-circle fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- الملغية -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Canceled Appointments</h6>
+                        <h3 class="fw-bold text-danger">@Model.Appointments.Count(a => a.StatusId == 6)</h3>
+                        <i class="fa-solid fa-times-circle fa-2x text-danger mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- المنتظرة -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Pending Appointments</h6>
+                        <h3 class="fw-bold text-warning">@Model.Appointments.Count(a => a.StatusId == 7)</h3>
+                        <i class="fa-solid fa-hourglass-half fa-2x text-warning mt-2"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول المواعيد -->
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+                <div class="app-card-body">
+                    <div class="table-responsive">
+                        <table class="table app-table-hover mb-0 text-left">
+                            <thead>
+                                <tr>
+                                    <th>Appointment ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Patient File</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appointment in Model.Appointments)
+                                {
+                                    <tr>
+                                        <td>#@appointment.AppointmentId</td>
+                                        <td>@appointment.Patient?.FullNameEn</td>
+                                        <td>@appointment.Patient?.Pat_No</td>
+                                        <td>@appointment.AppointmentDate.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>@appointment.AppointmentType?.CodeDescEn</td>
+                                        <td>@appointment.Status?.CodeDescEn</td>
+                                        <td>@appointment.Notes</td>
+                                        <td>
+                                            <button class="btn-sm app-btn-secondary me-1" data-bs-toggle="modal" data-bs-target="#appointmentModal"
+                                                    data-appointmentid="@appointment.AppointmentId" data-currentstatus="@appointment.StatusId">
+                                                <i class="fas fa-tools me-1"></i> Actions
+                                            </button>
+
+                                            <a asp-action="AppointmentDetails" asp-route-appointmentId="@appointment.AppointmentId" class="btn-sm app-btn-info me-1">
+                                                <i class="fa-solid fa-eye me-2 text-primary"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal لتغيير حالة المواعيد -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="appointmentForm" onsubmit="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalLabel">Update Appointment Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="AppointmentId" name="AppointmentId" />
+
+                    <div class="mb-3">
+                        <label for="StatusId" class="form-label">Select Status</label>
+                        <select id="StatusId" name="StatusId" class="form-select">
+                            <option value="5">Confirmed</option>
+                            <option value="6">Canceled</option>
+                            <option value="7">Pending</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Notes" class="form-label">Notes</label>
+                        <textarea id="Notes" name="Notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn app-btn-primary" id="saveAppointmentBtn">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        var appointmentModal = document.getElementById('appointmentModal');
+
+        appointmentModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var appointmentId = button.getAttribute('data-appointmentid');
+            var currentStatus = button.getAttribute('data-currentstatus');
+
+            var modal = this;
+            modal.querySelector('#AppointmentId').value = appointmentId;
+            modal.querySelector('#StatusId').value = currentStatus;
+        });
+
+        $('#saveAppointmentBtn').click(function () {
+            var formData = {
+                AppointmentId: $('#AppointmentId').val(),
+                StatusId: $('#StatusId').val(),
+                Notes: $('#Notes').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("UpdateAppointmentStatus", "Appointments")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        var modalEl = bootstrap.Modal.getInstance(appointmentModal);
+                        modalEl.hide();
+                        location.reload(); // يمكن التعديل لتحديث الصف فقط
+                    } else {
+                        alert('Error updating status');
+                    }
+                },
+                error: function () {
+                    alert('Error connecting to server');
+                }
+            });
+        });
+    </script>
+}
