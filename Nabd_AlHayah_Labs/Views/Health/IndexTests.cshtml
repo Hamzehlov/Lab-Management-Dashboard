@@ -4,31 +4,14 @@
     <div class="app-content pt-3 p-md-3 p-lg-4">
         <div class="container-xl">
 
-            <!-- Header و Search + Add -->
+           
+            <!-- Header و Search + Add + Back to Home -->
             <div class="row g-3 mb-4 align-items-center justify-content-between">
-                <div class="col-auto">
+                <div class="col-auto d-flex align-items-center gap-2">
                     <h1 class="app-page-title mb-0">Tests</h1>
-                </div>
-                <div class="col-auto">
-                    <div class="page-utilities">
-                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                            <div class="col-auto">
-                                <form class="table-search-form row gx-1 align-items-center">
-                                    <div class="col-auto">
-                                        <input type="text" id="search-tests" name="searchtests" class="form-control" placeholder="Search">
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn app-btn-secondary">Search</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-auto">
-                                <a asp-action="CreateTest" class="btn app-btn-primary">
-                                    <i class="fa-solid fa-plus me-1"></i> Add Test
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                    </a>
                 </div>
             </div>
 
@@ -50,52 +33,85 @@
                 </div>
             </div>
 
-            <!-- جدول الفحوصات -->
-            <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name (AR/EN)</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var test in Model)
-                                {
-                                    <tr>
-                                        <td>@test.TestId</td>
-                                        <td>
-                                            @if (test.TestImage != null)
-                                            {
-                                                var img = Convert.ToBase64String(test.TestImage);
-                                                <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
-                                            }
-                                        </td>
-                                        <td>@test.TestNameAr / @test.TestNameEn</td>
-                                        <td>@test.Category?.CodeDescEn</td>
-                                        <td>@(test.Price.HasValue ? test.Price.Value.ToString("C") : "-")</td>
-                                        <td>
-                                            <a asp-action="EditTest" asp-route-id="@test.TestId" class="btn-sm app-btn-warning me-1">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
-                                            <form asp-action="DeleteTest" asp-route-id="@test.TestId" method="post" style="display:inline;">
-                                                <button class="btn-sm app-btn-danger"><i class="fas fa-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="col-auto">
+                <a asp-action="CreateTest" class="btn app-btn-primary">
+                    <i class="fa-solid fa-plus me-1"></i> Add Test
+                </a>
             </div>
+
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+    @if (Model != null && Model.Any())
+    {
+        <div class="app-card-body">
+            <div class="table-responsive">
+                <table id="patientsTable" class="table app-table-hover mb-0 text-left display">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Name (AR/EN)</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var test in Model)
+                        {
+                            <tr>
+                                <td>@test.TestId</td>
+                                <td>
+                                    @if (test.TestImage != null)
+                                    {
+                                        var img = Convert.ToBase64String(test.TestImage);
+                                        <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
+                                    }
+                                </td>
+                                <td>@test.TestNameAr / @test.TestNameEn</td>
+                                <td>@test.Category?.CodeDescEn</td>
+                                <td>@(test.Price.HasValue ? test.Price.Value.ToString("C") : "-")</td>
+                                <td>
+                                    @if (test.IsActive == true)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="EditTest" asp-route-id="@test.TestId" class="btn-sm app-btn-warning me-1" title="Edit Test">
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </a>
+                                    <a class="btn-sm app-btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div><!--//table-responsive-->
+        </div><!--//app-card-body-->
+
+       
+    }
+    else
+    {
+        <div class="text-center text-muted my-4" style="font-size:1.1rem;">
+            No tests found.<br />
+            لا يوجد فحوصات بعد.
+        </div>
+    }
+</div><!--//app-card-->
 
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#patientsTable').DataTable();
+    });
+</script>

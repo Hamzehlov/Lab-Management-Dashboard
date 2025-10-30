@@ -28,6 +28,8 @@ public partial class Test
     public byte[]? TestImage { get; set; }
 
     public decimal? Price { get; set; }
+    public bool? IsActive { get; set; } 
+
 
     public virtual ICollection<AppointmentTest> AppointmentTests { get; set; } = new List<AppointmentTest>();
 

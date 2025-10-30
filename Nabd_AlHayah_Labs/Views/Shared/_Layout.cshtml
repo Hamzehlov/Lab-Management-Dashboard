@@ -2,21 +2,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Portal - Bootstrap 5 Admin Dashboard Template For Developers</title>
+	<title>Nabd AlHayah Labs - Admin Portal</title>
 
 	<!-- Meta -->
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
-	<meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+	<meta name="description" content="Nabd AlHayah Labs Admin Portal - Dashboard for Developers">
+	<meta name="author" content="Nabd AlHayah Labs">
 	<link rel="shortcut icon" href="favicon.ico">
+
 
 	<!-- FontAwesome JS-->
 
     <script src="~/assets/plugins/fontawesome/js/all.min.js"></script>
 	<link href="~/assets/css/portal.css" rel="stylesheet" />
+	<link href="~/lib/datatables/datatables.datatables.css" rel="stylesheet" />
+	<script src="~/lib/datatables/jquery.js"></script>
+	<script src="~/lib/datatables/datatables.js"></script>
 
 	<style>
 		body {
@@ -30,9 +34,187 @@
 
 	</style>
 
+
+
+<style>
+/* Toast Container */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: auto;
+    max-width: 450px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Toast Base */
+.toast-msg {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    padding: 16px 50px 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Show Toast */
+.toast-msg.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Toast Icon */
+.toast-icon {
+    font-size: 22px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* Toast Content */
+.toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.toast-message {
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.95;
+}
+
+/* Close Button */
+.toast-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.toast-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+/* Progress Bar */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(255,255,255,0.3);
+    transform-origin: left;
+    animation: progress 4s linear forwards;
+}
+
+@@keyframes progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Success Toast - مختبرات (أخضر/أزرق) */
+.toast-success {
+    background: linear-gradient(135deg, rgba(0, 200, 83, 0.95), rgba(0, 150, 136, 0.95));
+}
+
+/* Error Toast - مختبرات (أحمر/برتقالي) */
+.toast-error {
+    background: linear-gradient(135deg, rgba(255, 82, 82, 0.95), rgba(255, 64, 129, 0.95));
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    #toastContainer {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        transform: none;
+    }
+    .toast-msg {
+        padding: 12px 45px 12px 16px;
+    }
+}
+
+/* Hover Effect */
+.toast-msg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+}
+</style>
+
+
+
 </head>
 
 <body class="app">
+
+	@if (TempData["ToastAlert"] != null || TempData["ToastAlertError"] != null)
+	{
+		<div id="toastContainer">
+			@if (TempData["ToastAlert"] != null)
+			{
+				<div class="toast-msg toast-success show">
+					<div class="toast-icon">
+						<i class="fas fa-vial"></i> <!-- أيقونة فنية للمختبر -->
+					</div>
+					<div class="toast-content">
+						<div class="toast-title">Success / نجاح!</div>
+						<div class="toast-message">@TempData["ToastAlert"]</div>
+					</div>
+					<div class="toast-progress"></div>
+					<button class="toast-close">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			}
+			@if (TempData["ToastAlertError"] != null)
+			{
+				<div class="toast-msg toast-error show">
+					<div class="toast-icon">
+						<i class="fas fa-exclamation-triangle"></i> <!-- أيقونة خطأ طبية -->
+					</div>
+					<div class="toast-content">
+						<div class="toast-title">Error / خطأ!</div>
+						<div class="toast-message">@TempData["ToastAlertError"]</div>
+					</div>
+					<div class="toast-progress"></div>
+					<button class="toast-close">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			}
+		</div>
+	}
 	<header class="app-header fixed-top">
 		<div class="app-header-inner">
 			<div class="container-fluid py-2">
@@ -62,78 +244,39 @@
 
 								<div class="dropdown-menu p-0" aria-labelledby="notifications-dropdown-toggle">
 									<div class="dropdown-menu-header p-3">
-										<h5 class="dropdown-menu-title mb-0">Notifications</h5>
+										<h5 class="dropdown-menu-title mb-0">Notifications / الإشعارات</h5>
 									</div><!--//dropdown-menu-title-->
+
 									<div class="dropdown-menu-content">
+
 										<div class="item p-3">
 											<div class="row gx-2 justify-content-between align-items-center">
-												<div class="col-auto">
-													<img class="profile-image" src="assets/images/profiles/profile-1.png" alt="">
-												</div><!--//col-->
 												<div class="col">
 													<div class="info">
-														<div class="desc">Amy shared a file with you. Lorem ipsum dolor sit amet, consectetur adipiscing elit. </div>
+														<div class="desc">تم التسجيل من قبل حمزه ابو علوان / Registered by Hamza Abu Alwan</div>
 														<div class="meta"> 2 hrs ago</div>
 													</div>
 												</div><!--//col-->
 											</div><!--//row-->
 											<a class="link-mask" href="#"></a>
 										</div><!--//item-->
+
 										<div class="item p-3">
 											<div class="row gx-2 justify-content-between align-items-center">
-												<div class="col-auto">
-													<div class="app-icon-holder">
-														<svg width="1em" height="1em" viewbox="0 0 16 16" class="bi bi-receipt" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-															<path fill-rule="evenodd" d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0l-.509-.51z"></path>
-															<path fill-rule="evenodd" d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5z"></path>
-														</svg>
-													</div>
-												</div><!--//col-->
 												<div class="col">
 													<div class="info">
-														<div class="desc">You have a new invoice. Proin venenatis interdum est.</div>
+														<div class="desc">تم حجز موعد سحب منولي / Blood draw appointment booked</div>
 														<div class="meta"> 1 day ago</div>
 													</div>
 												</div><!--//col-->
 											</div><!--//row-->
 											<a class="link-mask" href="#"></a>
 										</div><!--//item-->
-										<div class="item p-3">
-											<div class="row gx-2 justify-content-between align-items-center">
-												<div class="col-auto">
-													<div class="app-icon-holder icon-holder-mono">
-														<svg width="1em" height="1em" viewbox="0 0 16 16" class="bi bi-bar-chart-line" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-															<path fill-rule="evenodd" d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2zm1 12h2V2h-2v12zm-3 0V7H7v7h2zm-5 0v-3H2v3h2z"></path>
-														</svg>
-													</div>
-												</div><!--//col-->
-												<div class="col">
-													<div class="info">
-														<div class="desc">Your report is ready. Proin venenatis interdum est.</div>
-														<div class="meta"> 3 days ago</div>
-													</div>
-												</div><!--//col-->
-											</div><!--//row-->
-											<a class="link-mask" href="#"></a>
-										</div><!--//item-->
-										<div class="item p-3">
-											<div class="row gx-2 justify-content-between align-items-center">
-												<div class="col-auto">
-													<img class="profile-image" src="assets/images/profiles/profile-2.png" alt="">
-												</div><!--//col-->
-												<div class="col">
-													<div class="info">
-														<div class="desc">James sent you a new message.</div>
-														<div class="meta"> 7 days ago</div>
-													</div>
-												</div><!--//col-->
-											</div><!--//row-->
-											<a class="link-mask" href="#"></a>
-										</div><!--//item-->
+
 									</div><!--//dropdown-menu-content-->
 
 									<div class="dropdown-menu-footer p-2 text-center">
-										<a href="#">View all</a>
+										<a href="#">View all / عرض الكل</a>
 									</div>
 
 								</div><!--//dropdown-menu-->
@@ -170,7 +313,7 @@
 
 				<!-- الشعار والعلامة التجارية -->
 				<div class="app-branding">
-					<a class="app-logo" href="index.html.htm">
+					<a class="app-logo" asp-action="Index" asp-controller="Home">
 						<img class="logo-icon me-2" src="~/assets/images/2.jpeg" alt="logo">
 						<span class="logo-text">Nabd Al Hayat</span>
 					</a>
@@ -187,13 +330,47 @@
 							</a>
 						</li>
 
-						<!-- المرضى -->
-						<li class="nav-item">
-							<a class="nav-link" asp-action="Index" asp-controller="Patient">
+						<!-- Patients -->
+						<li class="nav-item has-submenu">
+							<a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-patients" aria-expanded="false" aria-controls="submenu-patients">
 								<span class="nav-icon"><i class="fas fa-user-injured"></i></span>
-								<span class="nav-link-text">All Patients</span>
+								<span class="nav-link-text">Patients</span>
+								<span class="submenu-arrow"><i class="fas fa-chevron-down"></i></span>
 							</a>
+							<div id="submenu-patients" class="collapse submenu" data-bs-parent="#menu-accordion">
+								<ul class="submenu-list list-unstyled">
+									<li class="submenu-item">
+										<a class="submenu-link" asp-controller="Patient" asp-action="Index">All Patients</a>
+									</li>
+									<li class="submenu-item">
+										<a class="submenu-link" asp-controller="Patient" asp-action="Patient_Requests">Patient Requests</a>
+									</li>
+								</ul>
+							</div>
 						</li>
+
+
+
+						<!-- Appointments -->
+						<li class="nav-item has-submenu">
+							<a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-appointments" aria-expanded="false" aria-controls="submenu-appointments">
+								<span class="nav-icon"><i class="fas fa-calendar-check"></i></span>
+								<span class="nav-link-text">Appointments</span>
+								<span class="submenu-arrow"><i class="fas fa-chevron-down"></i></span>
+							</a>
+							<div id="submenu-appointments" class="collapse submenu" data-bs-parent="#menu-accordion">
+								<ul class="submenu-list list-unstyled">
+									<li class="submenu-item">
+										<a class="submenu-link" asp-controller="Appointments" asp-action="Index">All Appointments</a>
+									</li>
+									<li class="submenu-item">
+										<a class="submenu-link" asp-controller="Appointments" asp-action="Pending_Appointments">Pending Appointments</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+
+
 
 						<!-- الأخبار -->
 						<li class="nav-item">
@@ -204,13 +381,7 @@
 						</li>
 
 
-						<!-- المواعيد -->
-						<li class="nav-item">
-							<a class="nav-link" asp-controller="Appointments" asp-action="Index">
-								<span class="nav-icon"><i class="fas fa-calendar-check"></i></span>
-								<span class="nav-link-text">All Appointments</span>
-							</a>
-						</li>
+						
 
 						<!-- الفحوصات -->
 						<li class="nav-item">
@@ -288,13 +459,78 @@
 
 	@RenderSection("Scripts", required: false)
 
+
+
+	<footer class="app-footer">
+		<div class="container text-center py-3">
+			<small class="copyright">
+				Designed with <i class="fas fa-heart" style="color: #fb866a;"></i> by
+				<a class="app-link" href="#">Nabd AlHayah Labs</a>
+			</small>
+		</div>
+	</footer><!--//app-footer-->
 	<!-- Javascript -->
 	<script src="~/assets/plugins/popper.min.js"></script>
 	<script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 	<script src="~/assets/js/app.js"></script>
     <script src="~/assets/js/index-charts.js"></script>
     <script src="~/assets/js/charts-demo.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const toasts = document.querySelectorAll('.toast-msg');
 
+			toasts.forEach((toast, index) => {
+				// تأخير ظهور كل toast
+				setTimeout(() => {
+					toast.classList.add('show');
+				}, index * 150);
+
+				// إعداد الإغلاق التلقائي
+				const autoRemove = setTimeout(() => {
+					hideToast(toast);
+				}, 4000);
+
+				// زر الإغلاق
+				const closeBtn = toast.querySelector('.toast-close');
+				closeBtn.addEventListener('click', () => {
+					clearTimeout(autoRemove);
+					hideToast(toast);
+				});
+
+				// إغلاق عند النقر على الـ toast نفسه
+				toast.addEventListener('click', (e) => {
+					if (e.target === toast) {
+						clearTimeout(autoRemove);
+						hideToast(toast);
+					}
+				});
+			});
+
+			function hideToast(toast) {
+				toast.classList.remove('show');
+				toast.classList.add('hiding');
+
+				setTimeout(() => {
+					toast.remove();
+
+					// إعادة ترتيب الـ toasts المتبقية
+					const remainingToasts = document.querySelectorAll('.toast-msg');
+					if (remainingToasts.length === 0) {
+						document.getElementById('toastContainer').remove();
+					}
+				}, 600);
+			}
+
+			// إغلاق جميع الـ toasts عند الضغط على Esc
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					toasts.forEach(toast => {
+						hideToast(toast);
+					});
+				}
+			});
+		});
+	</script>
 </body>
 </html>
 

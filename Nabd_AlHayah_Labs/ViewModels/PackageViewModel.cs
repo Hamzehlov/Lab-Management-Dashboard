@@ -13,6 +13,7 @@ namespace Nabd_AlHayah_Labs.ViewModels
         public string? Duration { get; set; }
         public string? RequirementsEn { get; set; } // <-- أضف هذه الخاصية
         public string? RequirementsAr { get; set; } // <-- أضف هذه الخاصية
+        public bool IsActive { get; set; }
 
         public List<int> SelectedTestIds { get; set; } = new List<int>();
         public List<Test> AllTests { get; set; } = new List<Test>();

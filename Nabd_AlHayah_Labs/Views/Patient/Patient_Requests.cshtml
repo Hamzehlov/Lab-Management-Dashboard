@@ -1,0 +1,167 @@
+﻿@model IEnumerable<Nabd_AlHayah_Labs.Model.Patient>
+
+<div class="app-wrapper">
+
+
+
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">Patient Requests</h1>
+                </div>
+            </div><!--//row-->
+
+            <div class="row g-3 mb-5">
+                <!-- المرضى بدون Pat_No -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Patients without Pat_No</h6>
+                        <h3 class="fw-bold text-primary">@Model.Count(p => p.Pat_No == null)</h3>
+                        <i class="fa-solid fa-user-slash fa-2x text-primary mt-2"></i>
+                    </div>
+                </div>
+@* 
+                <!-- المرضى مع Pat_No -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Patients with Pat_No</h6>
+                        <h3 class="fw-bold text-success">@Model.Count(p => p.Pat_No != null)</h3>
+                        <i class="fa-solid fa-user-check fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- المواعيد القادمة -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Upcoming Appointments</h6>
+                        <h3 class="fw-bold text-success">@Model.Sum(p => p.Appointments.Count(a => a.AppointmentDate >= DateTime.Now))</h3>
+                        <i class="fa-solid fa-calendar-day fa-2x text-success mt-2"></i>
+                    </div>
+                </div> *@
+
+                <!-- العدد الكلي للمرضى -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Total Patients</h6>
+                        <h3 class="fw-bold text-danger">@Model.Count()</h3>
+                        <i class="fa-solid fa-users fa-2x text-danger mt-2"></i>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="app-card app-card-orders-table shadow-sm mb-5">
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="app-card-body">
+            <div class="table-responsive">
+                <table id="patients" class="table app-table-hover mb-0 text-left align-middle display">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="cell">Patient ID</th>
+                            <th class="cell">Full Name (AR/EN)</th>
+                            <th class="cell">File Number</th>
+                            <th class="cell">National ID</th>
+                            <th class="cell">Phone</th>
+                            <th class="cell">Email</th>
+                            <th class="cell text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td class="cell">#@patient.PatientId</td>
+                                <td class="cell">@patient.FullNameEn / @patient.FullNameAr</td>
+                                <td class="cell">@(
+                                    patient.Pat_No.HasValue
+                                    ? patient.Pat_No.ToString()
+                                    : "Not entered"
+                                )</td>
+                                <td class="cell">@patient.NationalId</td>
+                                <td class="cell">@patient.Phone</td>
+                                <td class="cell">@patient.Email</td>
+                                <td class="cell text-center">
+                                    <button class="btn btn-warning btn-md w-75"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#fileNumberModal"
+                                            data-patientid="@patient.PatientId"
+                                            data-patno="@(patient.Pat_No ?? 0)"
+                                            title="Edit File Number">
+                                        <i class="fas fa-pen-to-square me-2"></i> Edit File Number
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div><!--//table-responsive-->
+        </div><!--//app-card-body-->
+
+       
+    }
+    else
+    {
+        <div class="text-center text-muted my-4" style="font-size:1.1rem;">
+            No patients found. <br />
+            لا يوجد مرضى بعد.
+        </div>
+    }
+</div><!--//app-card-->
+
+
+        </div><!--//container-fluid-->
+    </div><!--//app-content-->
+
+
+</div><!--//app-wrapper-->
+
+<div class="modal fade" id="fileNumberModal" tabindex="-1" aria-labelledby="fileNumberModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UpdateFileNumber" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileNumberModalLabel">Add / Update File Number</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modalPatientId" name="PatientId" value="" />
+                    <div class="mb-3">
+                        <label for="modalPatNo" class="form-label">File Number / رقم الملف</label>
+                        <input type="number" class="form-control" id="modalPatNo" name="Pat_No" placeholder="Enter File Number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close / إغلاق</button>
+                    <button type="submit" class="btn btn-primary">Save / حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var fileNumberModal = document.getElementById('fileNumberModal');
+    fileNumberModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var patientId = button.getAttribute('data-patientid');
+        var patNo = button.getAttribute('data-patno') !== "0" ? button.getAttribute('data-patno') : "";
+
+        var modalPatientId = fileNumberModal.querySelector('#modalPatientId');
+        var modalPatNo = fileNumberModal.querySelector('#modalPatNo');
+
+        modalPatientId.value = patientId;
+        modalPatNo.value = patNo;
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#patients').DataTable();
+    });
+</script>

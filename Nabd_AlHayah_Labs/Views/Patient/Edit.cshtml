@@ -88,6 +88,11 @@
                                 <input asp-for="Password" class="form-control" type="password" autocomplete="new-password" />
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
+                            <div class="col-md-6 form-check mt-4">
+                                <input asp-for="Patient.IsActive" class="form-check-input" type="checkbox" />
+                                <label asp-for="Patient.IsActive" class="form-check-label">Active</label>
+                            </div>
+
 
                         </div>
 

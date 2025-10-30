@@ -8,9 +8,9 @@
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Appointments</h1>
-                     <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
-                <i class="fas fa-arrow-left me-1"></i> Back to Patients
-            </a>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                    </a>
                 </div>
             </div>
 
@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <!-- المؤكدة -->
+              @*   <!-- المؤكدة -->
                 <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
                         <h6 class="text-muted mb-1">Confirmed Appointments</h6>
@@ -42,7 +42,7 @@
                         <i class="fa-solid fa-times-circle fa-2x text-danger mt-2"></i>
                     </div>
                 </div>
-
+ *@
                 <!-- المنتظرة -->
                 <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
@@ -112,7 +112,8 @@
                                             </td>
                                             <td>@appointment.Notes</td>
                                             <td>
-                                                <button class="btn-sm app-btn-secondary me-1" data-bs-toggle="modal" data-bs-target="#appointmentModal"
+                                                <button class="btn-sm app-btn-secondary me-1" data-bs-toggle="modal"
+                                                        data-bs-target="#appointmentModal"
                                                         data-appointmentid="@appointment.AppointmentId"
                                                         data-currentstatus="@appointment.StatusId" title="Actions / الإجراءات">
                                                     <i class="fas fa-tools me-1"></i> Actions
@@ -130,6 +131,7 @@
                         </div>
                     </div>
                 </div>
+
             }
             else
             {
@@ -137,9 +139,9 @@
                     <i class="fas fa-calendar-xmark fa-3x mb-3 text-secondary"></i><br />
                     No appointments available yet.<br />
                     <span class="text-secondary">لا يوجد مواعيد حتى الآن.</span>
+                   
                 </div>
             }
-
 
         </div>
     </div>
@@ -180,9 +182,14 @@
     </div>
 </div>
 
+<script>
+    $(document).ready(function () {
+        $('#Appointments').DataTable();
+    });
+</script>
 
+@section Scripts {
    
-
     <script>
         var appointmentModal = document.getElementById('appointmentModal');
 
@@ -223,12 +230,6 @@
         });
     </script>
 
-   
+    
 
-
-
-<script>
-    $(document).ready(function () {
-        $('#Appointments').DataTable();
-    });
-</script>
+}

@@ -32,6 +32,7 @@ public partial class PersonalizedHealth
     public string? RequirementsAr { get; set; }
 
     public string? RequirementsEn { get; set; }
+    public bool? IsActive { get; set; }
 
     public virtual Test Test { get; set; } = null!;
 }

@@ -76,35 +76,42 @@ namespace Nabd_AlHayah_Labs.Controllers
 
 		public IActionResult CreateNews()
 		{
-			return View();
+            var model = new NewsEvent
+            {
+                IsActive = true // أو false حسب ما تريد كافتراضي
+            };
+            return View(model);
 		}
 
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNews(NewsEvent model, IFormFile? ImageFile)
-        {
-            if (ModelState.IsValid)
-            {
-                if (ImageFile != null && ImageFile.Length > 0)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        await ImageFile.CopyToAsync(ms);
-                        model.Image = ms.ToArray(); // هنا نحفظ الصورة باينري
-                    }
-                }
+		public async Task<IActionResult> CreateNews(NewsEvent model, IFormFile? ImageFile)
+		{
+			if (ModelState.IsValid)
+			{
+				if (ImageFile != null && ImageFile.Length > 0)
+				{
+					using (var ms = new MemoryStream())
+					{
+						await ImageFile.CopyToAsync(ms);
+						model.Image = ms.ToArray(); // حفظ الصورة بصيغة باينري
+					}
+				}
 
-                _context.Add(model);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Indexnews));
-            }
+				_context.Add(model);
+				await _context.SaveChangesAsync();
 
-            return View(model);
-        }
+				TempData["ToastAlert"] = "تم إضافة الخبر بنجاح. | News added successfully.";
+				return RedirectToAction(nameof(Indexnews));
+			}
+
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
 
-        public async Task<IActionResult> EditNews(int id)
+		public async Task<IActionResult> EditNews(int id)
 		{
 			var news = await _context.NewsEvents.FindAsync(id);
 			if (news == null)
@@ -116,57 +123,75 @@ namespace Nabd_AlHayah_Labs.Controllers
 	
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditNews(int id, NewsEvent model, IFormFile? ImageFile)
-        {
-            if (id != model.Id)
-                return NotFound();
+		public async Task<IActionResult> EditNews(int id, NewsEvent model, IFormFile? ImageFile)
+		{
+			if (id != model.Id)
+			{
+				TempData["ToastAlertError"] = "المعرف غير صحيح. | Invalid ID.";
+				return NotFound();
+			}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var existing = await _context.NewsEvents.FindAsync(id);
-                    if (existing == null)
-                        return NotFound();
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					var existing = await _context.NewsEvents.FindAsync(id);
+					if (existing == null)
+					{
+						TempData["ToastAlertError"] = "الخبر غير موجود. | News not found.";
+						return NotFound();
+					}
 
-                    // تحديث البيانات
-                    existing.TitleAr = model.TitleAr;
-                    existing.TitleEn = model.TitleEn;
-                    existing.DescriptionAr = model.DescriptionAr;
-                    existing.DescriptionEn = model.DescriptionEn;
-                    existing.EventDate = model.EventDate;
+					// تحديث البيانات
+					existing.TitleAr = model.TitleAr;
+					existing.TitleEn = model.TitleEn;
+					existing.DescriptionAr = model.DescriptionAr;
+					existing.DescriptionEn = model.DescriptionEn;
+					existing.EventDate = model.EventDate;
+				   existing.IsActive= model.IsActive;
 
-                    // تحديث الصورة إذا تم اختيار صورة جديدة
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            await ImageFile.CopyToAsync(ms);
-                            existing.Image = ms.ToArray();
-                        }
-                    }
+					// تحديث الصورة إذا تم اختيار صورة جديدة
+					if (ImageFile != null && ImageFile.Length > 0)
+					{
+						using (var ms = new MemoryStream())
+						{
+							await ImageFile.CopyToAsync(ms);
+							existing.Image = ms.ToArray();
+						}
+					}
 
-                    _context.Update(existing);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Indexnews));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    return NotFound();
-                }
-            }
-            return View(model);
-        }
+					_context.Update(existing);
+					await _context.SaveChangesAsync();
+
+					TempData["ToastAlert"] = "تم تعديل الخبر بنجاح. | News updated successfully.";
+					return RedirectToAction(nameof(Indexnews));
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					TempData["ToastAlertError"] = "حدث خطأ أثناء تعديل الخبر. | Error updating news.";
+					return NotFound();
+				}
+			}
+
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
 
-     
-		
+
+
 		[HttpPost]
 
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			var news = await _context.NewsEvents.FindAsync(id);
-			if (news != null)
+			if (news == null)
+			{
+				TempData["ToastAlertError"] = "الخبر غير موجود. | News not found.";
+				return RedirectToAction(nameof(Indexnews));
+			}
+
+			try
 			{
 				if (!string.IsNullOrEmpty(news.ImageUrl))
 				{
@@ -177,6 +202,12 @@ namespace Nabd_AlHayah_Labs.Controllers
 
 				_context.NewsEvents.Remove(news);
 				await _context.SaveChangesAsync();
+
+				TempData["ToastAlert"] = "تم حذف الخبر بنجاح. | News deleted successfully.";
+			}
+			catch (Exception ex)
+			{
+				TempData["ToastAlertError"] = $"حدث خطأ أثناء حذف الخبر: {ex.Message} | Error deleting news: {ex.Message}";
 			}
 
 			return RedirectToAction(nameof(Indexnews));

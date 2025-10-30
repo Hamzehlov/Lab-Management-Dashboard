@@ -50,54 +50,58 @@
             </div>
 
             <!-- Table of Recommendations -->
-            <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th class="cell">#</th>
-                                    <th class="cell">Title (EN)</th>
-                                    <th class="cell">Title (AR)</th>
-                                    <th class="cell">Details (EN)</th>
-                                    <th class="cell">Details (AR)</th>
-                                    <th class="cell">Based on Tests</th>
-                                    <th class="cell">Created At</th>
-                                    <th class="cell">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var rec in Model.HealthMonitorings)
-                                {
+            @if (Model.HealthMonitorings != null && Model.HealthMonitorings.Any())
+            {
+                <div class="app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="app-card-body">
+                        <div class="table-responsive">
+                            <table id="HealthMonitoring" class="table app-table-hover mb-0 text-left">
+                                <thead>
                                     <tr>
-                                        <td class="cell">@rec.MonitorId</td>
-                                        <td class="cell">@rec.RecommendationTitleEn</td>
-                                        <td class="cell">@rec.RecommendationTitleAr</td>
-                                        <td class="cell">@rec.RecommendationDetailsEn</td>
-                                        <td class="cell">@rec.RecommendationDetailsAr</td>
-                                        <td class="cell">@rec.BasedOnTests</td>
-                                        <td class="cell">@rec.CreatedAt?.ToString("yyyy-MM-dd")</td>
-                                        <td class="cell">
-                                            <a asp-action="EditHealthMonitoring" asp-route-monitorId="@rec.MonitorId" class="btn-sm app-btn-warning me-1" title="Edit">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@rec.MonitorId)" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
+                                        <th class="cell">#</th>
+                                        <th class="cell">Title (EN)</th>
+                                        <th class="cell">Title (AR)</th>
+                                        <th class="cell">Details (EN)</th>
+                                        <th class="cell">Details (AR)</th>
+                                        <th class="cell">Based on Tests</th>
+                                        <th class="cell">Created At</th>
+                                        <th class="cell">Actions</th>
                                     </tr>
-                                }
-                                @if (!Model.HealthMonitorings.Any())
-                                {
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted">No recommendations yet.</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div><!--//table-responsive-->
-                </div><!--//app-card-body-->
-            </div><!--//app-card-->
+                                </thead>
+                                <tbody>
+                                    @foreach (var rec in Model.HealthMonitorings)
+                                    {
+                                        <tr>
+                                            <td class="cell">@rec.MonitorId</td>
+                                            <td class="cell">@rec.RecommendationTitleEn</td>
+                                            <td class="cell">@rec.RecommendationTitleAr</td>
+                                            <td class="cell">@rec.RecommendationDetailsEn</td>
+                                            <td class="cell">@rec.RecommendationDetailsAr</td>
+                                            <td class="cell">@rec.BasedOnTests</td>
+                                            <td class="cell">@rec.CreatedAt?.ToString("yyyy-MM-dd")</td>
+                                            <td class="cell">
+                                                <a asp-action="EditHealthMonitoring" asp-route-monitorId="@rec.MonitorId" class="btn-sm app-btn-warning me-1" title="Edit">
+                                                    <i class="fas fa-pen-to-square"></i>
+                                                </a>
+                                                <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@rec.MonitorId)" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted my-4" style="font-size:1.1rem;">
+                    No recommendations yet. <br />
+                    لا توجد توصيات بعد.
+                </div>
+            }
 
         </div><!--//container-xl-->
     </div><!--//app-content-->
@@ -128,4 +132,10 @@
             }
         });
     }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#HealthMonitoring').DataTable();
+    });
 </script>

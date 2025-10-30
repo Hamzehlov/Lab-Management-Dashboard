@@ -10,28 +10,10 @@
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Patients</h1>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                    </a>
                 </div>
-                <div class="col-auto">
-                    <div class="page-utilities">
-                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                            <div class="col-auto">
-                                <form class="table-search-form row gx-1 align-items-center">
-                                    <div class="col-auto">
-                                        <input type="text" id="search-patients" name="searchpatients" class="form-control search-patients" placeholder="Search">
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn app-btn-secondary">Search</button>
-                                    </div>
-                                </form>
-                            </div><!--//col-->
-                            <div class="col-auto">
-                                <a asp-action="Create" class="btn app-btn-primary">
-                                    <i class="fa-solid fa-plus me-1"></i> Add Patient
-                                </a>
-                            </div>
-                        </div><!--//row-->
-                    </div><!--//table-utilities-->
-                </div><!--//col-auto-->
             </div><!--//row-->
 
             <div class="row g-3 mb-5">
@@ -73,97 +55,129 @@
             </div>
 
 
+            <div class="col-auto">
+                <a asp-action="Create" class="btn app-btn-primary">
+                    <i class="fa-solid fa-plus me-1"></i> Add Patient
+                </a>
+            </div>
+
             <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th class="cell">Patient ID</th>
-                                    <th class="cell">Full Name</th>
-                                    <th class="cell">Full Name Ar</th>
-                                    <th class="cell">National ID</th>
-                                    <th class="cell">Phone</th>
-                                    <th class="cell">Email</th>
-                                  
-                                    <th class="cell">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var patient in Model)
-                                {
-                                    <tr>
-                                        <td class="cell">#@patient.PatientId</td>
-                                        <td class="cell">@patient.FullNameEn</td>
-                                        <td class="cell">@patient.FullNameAr</td>
-                                        <td class="cell">@patient.NationalId</td>
-                                        <td class="cell">@patient.Phone</td>
-                                        <td class="cell">@patient.Email</td>
 
+    @if (Model != null && Model.Any())
+    {
+        <div class="app-card-body">
+                       
+            <div class="table-responsive">
+                <table id="patientsTable" class="table app-table-hover mb-0 text-left display">
+                    <thead>
+                        <tr>
+                            <th class="cell">Patient ID</th>
+                            <th class="cell">Full Name(AR/EN)</th>
+                            <th class="cell">File Number</th>
+                            <th class="cell">National ID</th>
+                            <th class="cell">Phone</th>
+                            <th class="cell">Email</th>
+                            <th class="cell">Status</th>
+                            <th class="cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td class="cell">#@patient.PatientId</td>
+                                <td class="cell">@patient.FullNameEn / @patient.FullNameAr</td>
+                                <td class="cell">@(
+                                    patient.Pat_No.HasValue
+                                    ? patient.Pat_No.ToString()
+                                    : "لم يتم إدخاله / Not entered"
+                                )</td>
+                                <td class="cell">@patient.NationalId</td>
+                                <td class="cell">@patient.Phone</td>
+                                <td class="cell">@patient.Email</td>
+                                <td class="cell">
+                                    @if (patient.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <!-- زر متابعة الحالة -->
+                                    <a asp-action="HealthMonitoring" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-secondary me-1" title="Health Monitoring / متابعة الحالة">
+                                        <i class="fas fa-notes-medical"></i>
+                                    </a>
 
-                                        <td>
-                                            <!-- Health Monitoring -->
-                                            <a asp-action="HealthMonitoring" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-secondary" title="Health Monitoring">
-                                                <i class="fas fa-notes-medical"></i>
-                                            </a>
+                                    <!-- تعديل بيانات المريض -->
+                                    <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn-sm app-btn-warning me-1" title="Edit / تعديل">
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </a>
 
-                                            <!-- Edit Patient -->
-                                            <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn-sm app-btn-warning me-1" title="تعديل بيانات المريض">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
+                                    <!-- المواعيد -->
+                                    <a asp-action="Appointments" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-info me-1" title="Appointments / المواعيد">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </a>
 
-                                            <!-- Appointments -->
-                                            <a asp-action="Appointments" asp-route-patientId="@patient.PatientId" class="btn-sm app-btn-info me-1" title="المواعيد">
-                                                <i class="fas fa-calendar-check"></i>
-                                            </a>
+                                    <!-- التفاصيل -->
+                                    <a asp-action="Details" asp-route-id="@patient.PatientId" class="btn-sm app-btn-info me-1" title="Details / التفاصيل">
+                                        <i class="fa-solid fa-eye me-2 text-primary"></i>
+                                    </a>
 
-                                            <!-- Details -->
-                                            <a class="btn-sm app-btn-info me-1" asp-action="Details" asp-route-id="@patient.PatientId" title="عرض التفاصيل">
-                                                <i class="fa-solid fa-eye me-2 text-primary"></i>
-                                            </a>
+                                    @* زر النتائج والفواتير كقائمة منسدلة مع أيقونة فقط *@
+                                    @if (patient.Pat_No.HasValue)
+                                    {
+                                        <div class="btn-group">
+                                            <button type="button" class="btn-sm app-btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Results / الفواتير">
+                                                <i class="fas fa-file-invoice me-1"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="ResultsAndInvoices" asp-action="Results" asp-route-patientId="@patient.PatientId" title="Results / النتائج">
+                                                        <i class="fas fa-vials me-1"></i> Results / النتائج
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="ResultsAndInvoices" asp-action="Invoices" asp-route-patientId="@patient.PatientId" title="Invoices / الفواتير">
+                                                        <i class="fas fa-file-invoice-dollar me-1"></i> Invoices / الفواتير
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div><!--//table-responsive-->
+        </div><!--//app-card-body-->
 
-                                            <!-- Results -->
-                                            <a class="btn-sm app-btn-success me-1" asp-controller="ResultsAndInvoices" asp-action="Results" asp-route-patientId="@patient.PatientId" title="النتائج">
-                                                <i class="fas fa-vials"></i>
-                                            </a>
+      
+    }
+    else
+    {
+        <div class="text-center text-muted my-4" style="font-size:1.1rem;">
+            No patients yet. <br />
+            لا يوجد مرضى بعد.
+        </div>
+    }
+</div><!--//app-card-->
 
-                                            <!-- Invoices -->
-                                            <a class="btn-sm app-btn-dark me-1" asp-controller="ResultsAndInvoices" asp-action="Invoices" asp-route-patientId="@patient.PatientId" title="الفواتير">
-                                                <i class="fas fa-file-invoice-dollar"></i>
-                                            </a>
-                                        </td>
-
-
-                                       
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div><!--//table-responsive-->
-                </div><!--//app-card-body-->
-            </div><!--//app-card-->
-
-            <nav class="app-pagination">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav><!--//app-pagination-->
+           
 
         </div><!--//container-fluid-->
     </div><!--//app-content-->
 
-    <footer class="app-footer">
-        <div class="container text-center py-3">
-            <small class="copyright">Designed with <i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="#">Your Team</a></small>
-        </div>
-    </footer><!--//app-footer-->
 
 </div><!--//app-wrapper-->
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#patientsTable').DataTable();
+    });
+</script>

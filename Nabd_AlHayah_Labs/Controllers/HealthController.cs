@@ -44,55 +44,59 @@ namespace Nabd_AlHayah_Labs.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTest(TestViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var test = new Test
-                {
-                    TestNameAr = model.TestNameAr,
-                    TestNameEn = model.TestNameEn,
-                    DescriptionAr = model.DescriptionAr,
-                    DescriptionEn = model.DescriptionEn,
-                    RequirementsAr = model.RequirementsAr,
-                    RequirementsEn = model.RequirementsEn,
-                    ShortBenefitAr = model.ShortBenefitAr,
-                    ShortBenefitEn = model.ShortBenefitEn,
-                    CategoryId = model.CategoryId,
-                    Price = model.Price
+		public async Task<IActionResult> CreateTest(TestViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var test = new Test
+				{
+					TestNameAr = model.TestNameAr,
+					TestNameEn = model.TestNameEn,
+					DescriptionAr = model.DescriptionAr,
+					DescriptionEn = model.DescriptionEn,
+					RequirementsAr = model.RequirementsAr,
+					RequirementsEn = model.RequirementsEn,
+					ShortBenefitAr = model.ShortBenefitAr,
+					ShortBenefitEn = model.ShortBenefitEn,
+					CategoryId = model.CategoryId,
+					Price = model.Price,
+
+                  IsActive = model.IsActive // ✅ هنا تربط الحالة
+
                 };
 
-                // رفع الصورة وتحويلها إلى byte[]
-                if (model.TestImageFile != null && model.TestImageFile.Length > 0)
-                {
-                    using var ms = new MemoryStream();
-                    await model.TestImageFile.CopyToAsync(ms);
-                    test.TestImage = ms.ToArray();
-                }
+				// رفع الصورة وتحويلها إلى byte[]
+				if (model.TestImageFile != null && model.TestImageFile.Length > 0)
+				{
+					using var ms = new MemoryStream();
+					await model.TestImageFile.CopyToAsync(ms);
+					test.TestImage = ms.ToArray();
+				}
 
-                _context.Tests.Add(test);
-                await _context.SaveChangesAsync();
+				_context.Tests.Add(test);
+				await _context.SaveChangesAsync();
 
-                TempData["Success"] = "تم إضافة الفحص بنجاح.";
-                return RedirectToAction(nameof(IndexTests));
-            }
+				TempData["ToastAlert"] = "تم إضافة الفحص بنجاح. | Test added successfully.";
+				return RedirectToAction(nameof(IndexTests));
+			}
 
-            // إعادة تحميل الفئات إذا فشل الـ ModelState
-            model.Categories = await _context.Codes
-                .Where(c => c.ParentId == 10)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.CodeDescEn ?? c.CodeDescEn
-                })
-                .ToListAsync();
+			// إعادة تحميل الفئات إذا فشل الـ ModelState
+			model.Categories = await _context.Codes
+				.Where(c => c.ParentId == 10)
+				.Select(c => new SelectListItem
+				{
+					Value = c.Id.ToString(),
+					Text = c.CodeDescEn ?? c.CodeDescEn
+				})
+				.ToListAsync();
 
-            return View(model);
-        }
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
 
 
-        public async Task<IActionResult> EditTest(int id)
+		public async Task<IActionResult> EditTest(int id)
         {
             var test = await _context.Tests.FindAsync(id);
             if (test == null) return NotFound();
@@ -116,7 +120,10 @@ namespace Nabd_AlHayah_Labs.Controllers
                 CategoryId = test.CategoryId,
                 Price = test.Price,
                 TestImage = test.TestImage,
-                Categories = categories
+                Categories = categories,
+
+                IsActive = test.IsActive ?? false,
+
             };
 
             return View(vm);
@@ -126,56 +133,64 @@ namespace Nabd_AlHayah_Labs.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTest(TestViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var test = await _context.Tests.FindAsync(model.TestId);
-                if (test == null) return NotFound();
+		public async Task<IActionResult> EditTest(TestViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var test = await _context.Tests.FindAsync(model.TestId);
+				if (test == null)
+				{
+					TempData["ToastAlertError"] = "الفحص غير موجود. | Test not found.";
+					return RedirectToAction(nameof(IndexTests));
+				}
 
-                test.TestNameAr = model.TestNameAr;
-                test.TestNameEn = model.TestNameEn;
-                test.DescriptionAr = model.DescriptionAr;
-                test.DescriptionEn = model.DescriptionEn;
-                test.RequirementsAr = model.RequirementsAr;
-                test.RequirementsEn = model.RequirementsEn;
-                test.ShortBenefitAr = model.ShortBenefitAr;
-                test.ShortBenefitEn = model.ShortBenefitEn;
-                test.CategoryId = model.CategoryId;
-                test.Price = model.Price;
+				test.TestNameAr = model.TestNameAr;
+				test.TestNameEn = model.TestNameEn;
+				test.DescriptionAr = model.DescriptionAr;
+				test.DescriptionEn = model.DescriptionEn;
+				test.RequirementsAr = model.RequirementsAr;
+				test.RequirementsEn = model.RequirementsEn;
+				test.ShortBenefitAr = model.ShortBenefitAr;
+				test.ShortBenefitEn = model.ShortBenefitEn;
+				test.CategoryId = model.CategoryId;
+				test.Price = model.Price;
+                test.IsActive = model.IsActive; // <--- هنا
+
 
                 if (model.TestImageFile != null)
-                {
-                    using var ms = new MemoryStream();
-                    await model.TestImageFile.CopyToAsync(ms);
-                    test.TestImage = ms.ToArray();
-                }
+				{
+					using var ms = new MemoryStream();
+					await model.TestImageFile.CopyToAsync(ms);
+					test.TestImage = ms.ToArray();
+				}
 
-                _context.Tests.Update(test);
-                await _context.SaveChangesAsync();
+				_context.Tests.Update(test);
+				await _context.SaveChangesAsync();
 
-                TempData["Success"] = "تم تعديل الفحص بنجاح.";
-                return RedirectToAction(nameof(IndexTests));
-            }
+				TempData["ToastAlert"] = "تم تعديل الفحص بنجاح. | Test updated successfully.";
+				return RedirectToAction(nameof(IndexTests));
+			}
 
-            model.Categories = await _context.Codes
-                .Where(c => c.ParentId == 10)
-                .Select(c => new SelectListItem { Text = c.CodeDescEn , Value = c.Id.ToString() })
-                .ToListAsync();
+			// إعادة تحميل الفئات إذا فشل الـ ModelState
+			model.Categories = await _context.Codes
+				.Where(c => c.ParentId == 10)
+				.Select(c => new SelectListItem { Text = c.CodeDescEn, Value = c.Id.ToString() })
+				.ToListAsync();
 
-            return View(model);
-        }
-
-
-
-
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
 
 
 
 
 
-        public async Task<IActionResult> IndexPackages()
+
+
+
+
+		public async Task<IActionResult> IndexPackages()
         {
             var packages = await _context.HealthPackages
                 .Include(p => p.PackageTests)
@@ -203,61 +218,63 @@ namespace Nabd_AlHayah_Labs.Controllers
     
         [HttpPost]
         [ValidateAntiForgeryToken]
+		public async Task<IActionResult> CreatePackage(PackageViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var package = new HealthPackage
+				{
+					PackageNameAr = model.PackageNameAr,
+					PackageNameEn = model.PackageNameEn,
+					DescriptionAr = model.DescriptionAr,
+					DescriptionEn = model.DescriptionEn,
+					Price = model.Price,
+					Duration = model.Duration,
+					IsActive = model.IsActive,
+				};
 
-        public async Task<IActionResult> CreatePackage(PackageViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var package = new HealthPackage
-                {
-                    PackageNameAr = model.PackageNameAr,
-                    PackageNameEn = model.PackageNameEn,
-                    DescriptionAr = model.DescriptionAr,
-                    DescriptionEn = model.DescriptionEn,
-                    Price = model.Price,
-                    Duration = model.Duration
-                };
+				// حفظ صورة الباقة
+				if (model.PackageImageFile != null && model.PackageImageFile.Length > 0)
+				{
+					using (var ms = new MemoryStream())
+					{
+						await model.PackageImageFile.CopyToAsync(ms);
+						package.PackageImage = ms.ToArray();
+					}
+				}
 
-                // حفظ صورة الباقة
-                if (model.PackageImageFile != null && model.PackageImageFile.Length > 0)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        await model.PackageImageFile.CopyToAsync(ms);
-                        package.PackageImage = ms.ToArray();
-                    }
-                }
+				// ربط الفحوصات المختارة
+				if (model.SelectedTestIds != null)
+				{
+					foreach (var testId in model.SelectedTestIds)
+					{
+						package.PackageTests.Add(new PackageTest
+						{
+							TestId = testId
+						});
+					}
+				}
 
-                // ربط الفحوصات المختارة
-                if (model.SelectedTestIds != null)
-                {
-                    foreach (var testId in model.SelectedTestIds)
-                    {
-                        package.PackageTests.Add(new PackageTest
-                        {
-                            TestId = testId
-                        });
-                    }
-                }
+				_context.HealthPackages.Add(package);
+				await _context.SaveChangesAsync();
 
-                _context.HealthPackages.Add(package);
-                await _context.SaveChangesAsync();
+				TempData["ToastAlert"] = "تم إضافة الباقة بنجاح. | Package added successfully.";
+				return RedirectToAction(nameof(IndexPackages));
+			}
 
-                TempData["Success"] = "تم إضافة الباقة بنجاح.";
-                return RedirectToAction(nameof(IndexPackages));
-            }
+			// إعادة تحميل الفحوصات في حال فشل التحقق
+			model.AllTests = await _context.Tests
+				.Include(t => t.Category)
+				.ToListAsync();
 
-            model.AllTests = await _context.Tests
-                .Include(t => t.Category)
-                .ToListAsync();
-
-            return View(model);
-        }
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
 
 
-        // GET: Health/EditPackage/5
-        public async Task<IActionResult> EditPackage(int id)
+		// GET: Health/EditPackage/5
+		public async Task<IActionResult> EditPackage(int id)
         {
             var package = await _context.HealthPackages
                 .Include(p => p.PackageTests)
@@ -281,6 +298,7 @@ namespace Nabd_AlHayah_Labs.Controllers
                 RequirementsEn = package.RequirementsEn,
                 PackageImage = package.PackageImage,
                 AllTests = allTests,
+				IsActive=package.IsActive ?? false,
                 SelectedTestIds = package.PackageTests.Select(pt => pt.TestId).ToList()
             };
 
@@ -290,66 +308,70 @@ namespace Nabd_AlHayah_Labs.Controllers
         // POST: Health/EditPackage/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPackage(PackageViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                model.AllTests = await _context.Tests.Include(t => t.Category).ToListAsync();
-                return View(model);
-            }
+		public async Task<IActionResult> EditPackage(PackageViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				model.AllTests = await _context.Tests.Include(t => t.Category).ToListAsync();
+				TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+				return View(model);
+			}
 
-            var package = await _context.HealthPackages
-                .Include(p => p.PackageTests)
-                .FirstOrDefaultAsync(p => p.PackageId == model.PackageId);
+			var package = await _context.HealthPackages
+				.Include(p => p.PackageTests)
+				.FirstOrDefaultAsync(p => p.PackageId == model.PackageId);
 
-            if (package == null)
-                return NotFound();
+			if (package == null)
+			{
+				TempData["ToastAlertError"] = "الباقة غير موجودة. | Package not found.";
+				return RedirectToAction(nameof(IndexPackages));
+			}
 
-            // تحديث البيانات الأساسية
-            package.PackageNameAr = model.PackageNameAr;
-            package.PackageNameEn = model.PackageNameEn;
-            package.DescriptionAr = model.DescriptionAr;
-            package.DescriptionEn = model.DescriptionEn;
-            package.Price = model.Price;
-            package.Duration = model.Duration;
-            package.RequirementsAr = model.RequirementsAr;
-            package.RequirementsEn = model.RequirementsEn;
+			// تحديث البيانات الأساسية
+			package.PackageNameAr = model.PackageNameAr;
+			package.PackageNameEn = model.PackageNameEn;
+			package.DescriptionAr = model.DescriptionAr;
+			package.DescriptionEn = model.DescriptionEn;
+			package.Price = model.Price;
+			package.Duration = model.Duration;
+			package.RequirementsAr = model.RequirementsAr;
+			package.RequirementsEn = model.RequirementsEn;
+			package.IsActive = model.IsActive;
+			// تحديث الصورة إذا تم رفع صورة جديدة
+			if (model.PackageImageFile != null && model.PackageImageFile.Length > 0)
+			{
+				using var ms = new MemoryStream();
+				await model.PackageImageFile.CopyToAsync(ms);
+				package.PackageImage = ms.ToArray();
+			}
 
-            // تحديث الصورة إذا تم رفع صورة جديدة
-            if (model.PackageImageFile != null && model.PackageImageFile.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await model.PackageImageFile.CopyToAsync(ms);
-                package.PackageImage = ms.ToArray();
-            }
+			// حذف الاختبارات القديمة
+			if (package.PackageTests.Any())
+				_context.PackageTests.RemoveRange(package.PackageTests);
 
-            // حذف الاختبارات القديمة
-            if (package.PackageTests.Any())
-                _context.PackageTests.RemoveRange(package.PackageTests);
+			// إضافة الاختبارات الجديدة
+			if (model.SelectedTestIds != null && model.SelectedTestIds.Any())
+			{
+				foreach (var testId in model.SelectedTestIds)
+				{
+					package.PackageTests.Add(new PackageTest
+					{
+						TestId = testId,
+						PackageId = package.PackageId
+					});
+				}
+			}
 
-            // إضافة الاختبارات الجديدة
-            if (model.SelectedTestIds != null && model.SelectedTestIds.Any())
-            {
-                foreach (var testId in model.SelectedTestIds)
-                {
-                    package.PackageTests.Add(new PackageTest
-                    {
-                        TestId = testId,
-                        PackageId = package.PackageId
-                    });
-                }
-            }
+			await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "تم تعديل البكج بنجاح.";
-            return RedirectToAction(nameof(IndexPackages));
-        }
-
-
+			TempData["ToastAlert"] = "تم تعديل الباقة بنجاح. | Package updated successfully.";
+			return RedirectToAction(nameof(IndexPackages));
+		}
 
 
-        public async Task<IActionResult> DeletePackage(int id)
+
+
+		public async Task<IActionResult> DeletePackage(int id)
         {
             var package = await _context.HealthPackages
                 .Include(p => p.PackageTests)
@@ -412,53 +434,56 @@ namespace Nabd_AlHayah_Labs.Controllers
         // POST: Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePersonalizedHealth(PersonalizedHealthViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var personalized = new PersonalizedHealth
-                {
-                    TestId = model.TestId,
-                    CardTitleAr = model.CardTitleAr,
-                    CardTitleEn = model.CardTitleEn,
-                    CardSnippetAr = model.CardSnippetAr,
-                    CardSnippetEn = model.CardSnippetEn,
-                    TestNameAr = model.TestNameAr,
-                    TestNameEn = model.TestNameEn,
-                    DescriptionAr = model.DescriptionAr,
-                    DescriptionEn = model.DescriptionEn,
-                    RequirementsAr = model.RequirementsAr,
-                    RequirementsEn = model.RequirementsEn
-                };
+		public async Task<IActionResult> CreatePersonalizedHealth(PersonalizedHealthViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var personalized = new PersonalizedHealth
+				{
+					TestId = model.TestId,
+					CardTitleAr = model.CardTitleAr,
+					CardTitleEn = model.CardTitleEn,
+					CardSnippetAr = model.CardSnippetAr,
+					CardSnippetEn = model.CardSnippetEn,
+					TestNameAr = model.TestNameAr,
+					TestNameEn = model.TestNameEn,
+					DescriptionAr = model.DescriptionAr,
+					DescriptionEn = model.DescriptionEn,
+					RequirementsAr = model.RequirementsAr,
+					RequirementsEn = model.RequirementsEn,
+					IsActive=model.IsActive,
+					
+				};
 
-                if (model.CardImageFile != null)
-                {
-                    using var ms = new MemoryStream();
-                    await model.CardImageFile.CopyToAsync(ms);
-                    personalized.CardImage = ms.ToArray();
-                }
+				if (model.CardImageFile != null)
+				{
+					using var ms = new MemoryStream();
+					await model.CardImageFile.CopyToAsync(ms);
+					personalized.CardImage = ms.ToArray();
+				}
 
-                if (model.TestImageFile != null)
-                {
-                    using var ms = new MemoryStream();
-                    await model.TestImageFile.CopyToAsync(ms);
-                    personalized.TestImage = ms.ToArray();
-                }
+				if (model.TestImageFile != null)
+				{
+					using var ms = new MemoryStream();
+					await model.TestImageFile.CopyToAsync(ms);
+					personalized.TestImage = ms.ToArray();
+				}
 
-                _context.PersonalizedHealths.Add(personalized);
-                await _context.SaveChangesAsync();
+				_context.PersonalizedHealths.Add(personalized);
+				await _context.SaveChangesAsync();
 
-                TempData["Success"] = "تم إضافة بطاقة الفحص الشخصي بنجاح.";
-                return RedirectToAction(nameof(IndexPersonalizedHealth));
-            }
+				TempData["ToastAlert"] = "تم إضافة بطاقة الفحص الشخصي بنجاح. | Personalized health card added successfully.";
+				return RedirectToAction(nameof(IndexPersonalizedHealth));
+			}
 
-            // إعادة تحميل قائمة الفحوصات
-            model.AllTests = await _context.Tests.ToListAsync();
-            return View(model);
-        }
+			// إعادة تحميل قائمة الفحوصات عند فشل ModelState
+			model.AllTests = await _context.Tests.ToListAsync();
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
-        // GET: Edit
-        public async Task<IActionResult> EditPersonalizedHealth(int id)
+		// GET: Edit
+		public async Task<IActionResult> EditPersonalizedHealth(int id)
         {
             var personalized = await _context.PersonalizedHealths
                 .Include(p => p.Test)
@@ -485,7 +510,8 @@ namespace Nabd_AlHayah_Labs.Controllers
                 RequirementsEn = personalized.RequirementsEn,
                 CardImage = personalized.CardImage,
                 TestImage = personalized.TestImage,
-                AllTests = tests
+                AllTests = tests,
+				IsActive= personalized.IsActive ?? false,
             };
 
             return View(vm);
@@ -494,53 +520,54 @@ namespace Nabd_AlHayah_Labs.Controllers
         // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPersonalizedHealth(PersonalizedHealthViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var personalized = await _context.PersonalizedHealths.FindAsync(model.Id);
-                if (personalized == null)
-                    return NotFound();
+		public async Task<IActionResult> EditPersonalizedHealth(PersonalizedHealthViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var personalized = await _context.PersonalizedHealths.FindAsync(model.Id);
+				if (personalized == null)
+					return NotFound();
 
-                personalized.TestId = model.TestId;
-                personalized.CardTitleAr = model.CardTitleAr;
-                personalized.CardTitleEn = model.CardTitleEn;
-                personalized.CardSnippetAr = model.CardSnippetAr;
-                personalized.CardSnippetEn = model.CardSnippetEn;
-                personalized.TestNameAr = model.TestNameAr;
-                personalized.TestNameEn = model.TestNameEn;
-                personalized.DescriptionAr = model.DescriptionAr;
-                personalized.DescriptionEn = model.DescriptionEn;
-                personalized.RequirementsAr = model.RequirementsAr;
-                personalized.RequirementsEn = model.RequirementsEn;
+				personalized.TestId = model.TestId;
+				personalized.CardTitleAr = model.CardTitleAr;
+				personalized.CardTitleEn = model.CardTitleEn;
+				personalized.CardSnippetAr = model.CardSnippetAr;
+				personalized.CardSnippetEn = model.CardSnippetEn;
+				personalized.TestNameAr = model.TestNameAr;
+				personalized.TestNameEn = model.TestNameEn;
+				personalized.DescriptionAr = model.DescriptionAr;
+				personalized.DescriptionEn = model.DescriptionEn;
+				personalized.RequirementsAr = model.RequirementsAr;
+				personalized.RequirementsEn = model.RequirementsEn;
 
-                if (model.CardImageFile != null)
-                {
-                    using var ms = new MemoryStream();
-                    await model.CardImageFile.CopyToAsync(ms);
-                    personalized.CardImage = ms.ToArray();
-                }
+				if (model.CardImageFile != null)
+				{
+					using var ms = new MemoryStream();
+					await model.CardImageFile.CopyToAsync(ms);
+					personalized.CardImage = ms.ToArray();
+				}
 
-                if (model.TestImageFile != null)
-                {
-                    using var ms = new MemoryStream();
-                    await model.TestImageFile.CopyToAsync(ms);
-                    personalized.TestImage = ms.ToArray();
-                }
+				if (model.TestImageFile != null)
+				{
+					using var ms = new MemoryStream();
+					await model.TestImageFile.CopyToAsync(ms);
+					personalized.TestImage = ms.ToArray();
+				}
 
-                _context.PersonalizedHealths.Update(personalized);
-                await _context.SaveChangesAsync();
+				_context.PersonalizedHealths.Update(personalized);
+				await _context.SaveChangesAsync();
 
-                TempData["Success"] = "تم تعديل بطاقة الفحص الشخصي بنجاح.";
-                return RedirectToAction(nameof(IndexPersonalizedHealth));
-            }
+				TempData["ToastAlert"] = "تم تعديل بطاقة الفحص الشخصي بنجاح. | Personalized health card updated successfully.";
+				return RedirectToAction(nameof(IndexPersonalizedHealth));
+			}
 
-            // إعادة تحميل قائمة الفحوصات
-            model.AllTests = await _context.Tests.ToListAsync();
-            return View(model);
-        }
+			// إعادة تحميل قائمة الفحوصات عند فشل ModelState
+			model.AllTests = await _context.Tests.ToListAsync();
+			TempData["ToastAlertError"] = "يرجى التحقق من البيانات المدخلة. | Please check the entered data.";
+			return View(model);
+		}
 
-        public async Task<IActionResult> IndexPersonalizedHealth()
+		public async Task<IActionResult> IndexPersonalizedHealth()
         {
             var list = await _context.PersonalizedHealths.Include(p => p.Test).ToListAsync();
             return View(list);

@@ -16,6 +16,7 @@ namespace Nabd_AlHayah_Labs.ViewModels
         public string? ShortBenefitEn { get; set; }
         public int? CategoryId { get; set; }
         public decimal? Price { get; set; }
+        public bool IsActive { get; set; }
 
         // صورة الفحص
         public IFormFile? TestImageFile { get; set; }

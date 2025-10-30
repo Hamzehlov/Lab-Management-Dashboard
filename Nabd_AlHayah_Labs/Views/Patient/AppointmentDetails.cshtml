@@ -15,10 +15,26 @@
                 <h4>Basic Info</h4>
                 <p><strong>Patient:</strong> @Model.Patient.FullNameEn (@Model.Patient.FullNameAr)</p>
                 <p><strong>Date & Time:</strong> @Model.AppointmentDate.ToString("dd MMM yyyy HH:mm")</p>
-                <p><strong>Appointment Type:</strong> @Model.AppointmentTypes.FirstOrDefault(t => t.Id == Model.AppointmentTypeId)?.Name</p>
-                <p><strong>Status:</strong> @(Model.Status != null ? Model.Status.CodeDescEn : "Not set")</p>
+            
+                <p><strong>Appointment Type:</strong> @(Model.Appointmentdesc != null ? Model.Appointmentdesc : "Not set")</p>
+                <p><strong>Status:</strong> @(Model.Statusdesc != null ? Model.Statusdesc : "Not set")</p>
                 <p><strong>Notes:</strong> @Model.Notes</p>
             </div>
+
+
+  @if (Model.AppointmentTypeId == 10 && (Model.AddressAr != null || Model.CityAr != null))
+            {
+                <div class="card shadow-sm mb-4 p-3">
+                    <h4>Home Sampling Info</h4>
+                    <p><strong>Address (AR):</strong> @Model.AddressAr</p>
+                    <p><strong>Address (EN):</strong> @Model.AddressEn</p>
+                    <p><strong>City (AR):</strong> @Model.CityAr</p>
+                    <p><strong>City (EN):</strong> @Model.CityEn</p>
+                    <p><strong>Technician Name:</strong> @Model.TechnicianName</p>
+                    <p><strong>Is For Another Person:</strong> @(Model.IsForAnotherPerson ? "Yes" : "No")</p>
+                </div>
+            }
+
 
             <!-- الفحوصات -->
             <div class="card shadow-sm mb-4 p-3">
@@ -57,18 +73,7 @@
             </div>
 
             <!-- بيانات السحب المنزلي -->
-            @if (Model.AppointmentTypeId == 10 && (Model.AddressAr != null || Model.CityAr != null))
-            {
-                <div class="card shadow-sm mb-4 p-3">
-                    <h4>Home Sampling Info</h4>
-                    <p><strong>Address (AR):</strong> @Model.AddressAr</p>
-                    <p><strong>Address (EN):</strong> @Model.AddressEn</p>
-                    <p><strong>City (AR):</strong> @Model.CityAr</p>
-                    <p><strong>City (EN):</strong> @Model.CityEn</p>
-                    <p><strong>Technician Name:</strong> @Model.TechnicianName</p>
-                    <p><strong>Is For Another Person:</strong> @(Model.IsForAnotherPerson ? "Yes" : "No")</p>
-                </div>
-            }
+          
 
             <!-- زر الرجوع أسفل الصفحة -->
             <a asp-action="Appointment" asp-route-patientId="@Model.Patient.PatientId" class="btn btn-secondary mb-3">

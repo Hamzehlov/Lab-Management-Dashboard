@@ -7,9 +7,9 @@
     <div class="app-content pt-3 p-md-3 p-lg-4">
         <div class="container-xl">
 
-            <div class="app-card shadow-lg rounded-3 overflow-hidden">
+            <div class="app-card shadow-lg rounded-4 overflow-hidden">
                 <!-- Header -->
-                <div class="app-card-header d-flex justify-content-between align-items-center p-3 border-bottom">
+                <div class="app-card-header d-flex justify-content-between align-items-center p-3 border-bottom bg-primary text-white">
                     <h4 class="mb-0"><i class="fas fa-boxes-stacked me-2"></i> Add Health Package</h4>
                     <a asp-action="Index" class="btn btn-light btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Back
@@ -21,68 +21,74 @@
                     <form asp-action="CreatePackage" method="post" enctype="multipart/form-data">
                         <div class="row g-3">
 
+                            <!-- Package Names -->
                             <div class="col-md-6">
-                                <label class="form-label">Package Name (EN)</label>
+                                <label class="form-label fw-bold">Package Name (EN)</label>
                                 <input asp-for="PackageNameEn" class="form-control" required />
                                 <span asp-validation-for="PackageNameEn" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label">Package Name (AR)</label>
+                                <label class="form-label fw-bold">Package Name (AR)</label>
                                 <input asp-for="PackageNameAr" class="form-control" required />
                                 <span asp-validation-for="PackageNameAr" class="text-danger"></span>
                             </div>
 
+                            <!-- Descriptions -->
                             <div class="col-md-6">
-                                <label class="form-label">Description (EN)</label>
-                                <textarea asp-for="DescriptionEn" class="form-control"></textarea>
+                                <label class="form-label fw-bold">Description (EN)</label>
+                                <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
                                 <span asp-validation-for="DescriptionEn" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label">Description (AR)</label>
-                                <textarea asp-for="DescriptionAr" class="form-control"></textarea>
+                                <label class="form-label fw-bold">Description (AR)</label>
+                                <textarea asp-for="DescriptionAr" class="form-control" rows="3"></textarea>
                                 <span asp-validation-for="DescriptionAr" class="text-danger"></span>
                             </div>
 
+                            <!-- Price / Duration / Requirements -->
                             <div class="col-md-4">
-                                <label class="form-label">Price</label>
+                                <label class="form-label fw-bold">Price</label>
                                 <input asp-for="Price" class="form-control" type="number" step="0.01" />
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-4">
-                                <label class="form-label">Duration</label>
+                                <label class="form-label fw-bold">Duration</label>
                                 <input asp-for="Duration" class="form-control" />
                                 <span asp-validation-for="Duration" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-4">
-                                <label class="form-label">Requirements (AR)</label>
+                                <label class="form-label fw-bold">Requirements (AR)</label>
                                 <input asp-for="RequirementsAr" class="form-control" />
                                 <span asp-validation-for="RequirementsAr" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-6">
-                                <label class="form-label">Requirements (EN)</label>
+                                <label class="form-label fw-bold">Requirements (EN)</label>
                                 <input asp-for="RequirementsEn" class="form-control" />
                                 <span asp-validation-for="RequirementsEn" class="text-danger"></span>
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Package Image</label>
-                                <input asp-for="PackageImageFile" class="form-control" type="file" accept="image/*" onchange="previewImage(event)" />
-                                <span asp-validation-for="PackageImageFile" class="text-danger"></span>
-
-                                <div class="mt-3 text-center">
-                                    <img id="imagePreview" src="#" class="rounded-circle border shadow-sm" style="width:150px; height:150px; object-fit:cover; display:none;" />
+                            <!-- Active Checkbox -->
+                            <div class="col-md-6 d-flex align-items-center mt-4">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsActive" class="form-check-label fw-bold ms-2">Active</label>
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <label class="form-label">Select Tests</label>
-                                <input type="text" id="testSearch" class="form-control mb-2" placeholder="Search tests..." />
+                            <!-- Image Upload -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Package Image</label>
+                                <input asp-for="PackageImageFile" class="form-control" type="file" accept="image/*" onchange="previewImage(event)" />
+                                <span asp-validation-for="PackageImageFile" class="text-danger"></span>
+                                <div class="mt-3 text-center">
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border" style="width:150px; height:150px; object-fit:cover; display:none;" />
+                                </div>
+                            </div>
 
+                            <!-- Tests Selection -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Select Tests</label>
+                                <input type="text" id="testSearch" class="form-control mb-2" placeholder="Search tests..." />
                                 <div class="row g-2 border rounded p-3" id="testsContainer" style="max-height:300px; overflow-y:auto;">
                                     @foreach (var test in Model.AllTests)
                                     {
@@ -101,11 +107,12 @@
 
                         </div>
 
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">
+                        <!-- Buttons -->
+                        <div class="mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2">
                                 <i class="fas fa-save me-1"></i> Save
                             </button>
-                            <a asp-action="Index" class="btn btn-light ms-2">
+                            <a asp-action="Index" class="btn btn-light">
                                 <i class="fas fa-arrow-left me-1"></i> Cancel
                             </a>
                         </div>
@@ -131,7 +138,6 @@
             reader.readAsDataURL(input.files[0]);
         }
 
-        // Search/filter functionality for tests
         document.getElementById('testSearch').addEventListener('input', function () {
             var filter = this.value.toLowerCase();
             var items = document.querySelectorAll('#testsContainer .test-item');

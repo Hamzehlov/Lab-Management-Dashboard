@@ -110,57 +110,94 @@
 
             <!-- Appointments Table -->
             <!-- Appointments Table -->
-            <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Date & Time</th>
-                                    <th>Notes</th>
-                                    <th>Packages</th>
-                                    <th>Tests</th>
-                                    <th>Appointment Type</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var appt in Model.Appointments)
-                                {
+            @if (Model.Appointments != null && Model.Appointments.Any())
+            {
+                <div class="app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="app-card-body">
+                        <div class="table-responsive">
+                            <table class="table app-table-hover mb-0 text-left">
+                                <thead>
                                     <tr>
-                                        <td>@appt.AppointmentId</td>
-                                        <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                        <td>@appt.Notes</td>
-                                        <td>@string.Join(", ", appt.AppointmentPackages.Select(p => p.Package.PackageNameEn))</td>
-                                        <td>@string.Join(", ", appt.AppointmentTests.Select(t => t.Test.TestNameEn))</td>
-                                        <td>@appt.AppointmentType?.CodeDescEn</td> <!-- نوع الموعد -->
-                                        <td>@appt.Status?.CodeDescEn</td> <!-- الحالة -->
-                                        <td>
-                                            <a asp-action="EditAppointment" asp-route-id="@appt.AppointmentId" class="btn-sm app-btn-warning me-1">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
-                                            <a asp-action="AppointmentDetails" asp-route-appointmentId="@appt.AppointmentId" class="btn-sm app-btn-info me-1">
-                                                <i class="fa-solid fa-eye me-2 text-primary"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@appt.AppointmentId)">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
+                                        <th>#</th>
+                                        <th>Date & Time</th>
+                                        <th>Notes</th>
+                                        <th>Packages</th>
+                                        <th>Tests</th>
+                                        <th>Type(AR/EN)</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                }
-                                @if (!Model.Appointments.Any())
-                                {
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted">No appointments yet.</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appt in Model.Appointments)
+                                    {
+                                        <tr>
+                                            <td>@appt.AppointmentId</td>
+                                            <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@appt.Notes</td>
+                                            <td>@string.Join(", ", appt.AppointmentPackages.Select(p => p.Package.PackageNameEn))</td>
+                                            <td>@string.Join(", ", appt.AppointmentTests.Select(t => t.Test.TestNameEn))</td>
+                                            <td>@appt.AppointmentType?.CodeDescEn / @appt.AppointmentType?.CodeDescAr</td>
+
+                                            <!-- الحالة Badge عربي / إنجليزي -->
+                                            <td>
+                                                @{
+                                                    string statusClass = "";
+                                                    string statusText = appt.Status?.CodeDescEn ?? "";
+                                                    switch (appt.Status?.CodeDescEn)
+                                                    {
+                                                        case "Pending":
+                                                            statusClass = "bg-warning text-dark";
+                                                            statusText = "Pending / قيد الانتظار";
+                                                            break;
+                                                        case "Canceled":
+                                                            statusClass = "bg-danger text-white";
+                                                            statusText = "Canceled / ملغي";
+                                                            break;
+                                                        case "Confirmed":
+                                                            statusClass = "bg-success text-white";
+                                                            statusText = "Confirmed / مؤكد";
+                                                            break;
+                                                        default:
+                                                            statusClass = "bg-secondary text-white";
+                                                            statusText = statusText;
+                                                            break;
+                                                    }
+                                                }
+                                                <span class="badge @statusClass px-2 py-1">@statusText</span>
+                                            </td>
+
+                                            <!-- الأزرار -->
+                                            <td>
+                                                <!-- Edit Appointment -->
+                                                <a asp-action="EditAppointment" asp-route-id="@appt.AppointmentId" class="btn-sm app-btn-warning me-1" title="Edit / تعديل">
+                                                    <i class="fas fa-pen-to-square me-1"></i>
+                                                </a>
+
+                                                <!-- Appointment Details -->
+                                                <a asp-action="AppointmentDetails" asp-route-appointmentId="@appt.AppointmentId" class="btn-sm app-btn-info me-1" title="Details / التفاصيل">
+                                                    <i class="fa-solid fa-eye me-1"></i>
+                                                </a>
+
+                                                <!-- Delete Appointment -->
+                                                <a href="javascript:void(0);" class="btn-sm app-btn-danger" onclick="confirmDelete(@appt.AppointmentId)" title="Delete / حذف">
+                                                    <i class="fas fa-trash me-1"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="app-card shadow-sm mb-4 p-4 text-center">
+                    <h5 class="text-muted mb-0">No appointments yet / لا يوجد مواعيد</h5>
+                </div>
+            }
 
         </div>
     </div>
@@ -199,5 +236,11 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $('#Appointments').DataTable();
+        });
     </script>
+
+   
 }

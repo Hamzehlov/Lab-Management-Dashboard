@@ -100,11 +100,12 @@ namespace Nabd_AlHayah_Labs.ViewModels
     {
         public Patient Patient { get; set; } = new Patient();
 
-        // كلمة المرور بشكل منفصل
-        public string? Password { get; set; }
+		[Required(ErrorMessage = "Please enter a password.")]
+		public string Password { get; set; } = null!;
 
-        // قائمة الجندر لعمل DropDownList
-        public List<SelectListItem> Genders { get; set; } = new List<SelectListItem>();
+
+		// قائمة الجندر لعمل DropDownList
+		public List<SelectListItem> Genders { get; set; } = new List<SelectListItem>();
     }
 
     public class HealthMonitoringViewModel
@@ -120,8 +121,9 @@ namespace Nabd_AlHayah_Labs.ViewModels
     {
         public int AppointmentId { get; set; }
         public Patient Patient { get; set; }
+		public int PatientId { get; set; }
 
-        public List<Appointment> Appointments { get; set; } = new();
+		public List<Appointment>? Appointments { get; set; } = new();
         public List<SelectableItem> Packages { get; set; } = new();
         public List<SelectableItem> Tests { get; set; } = new();
 
@@ -129,6 +131,8 @@ namespace Nabd_AlHayah_Labs.ViewModels
         public int AppointmentTypeId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string? Notes { get; set; }
+
+        public string? Appointmentdesc { get; set; }
 
         // بيانات السحب المنزلي
         public string? AddressAr { get; set; }
@@ -138,7 +142,7 @@ namespace Nabd_AlHayah_Labs.ViewModels
         public string? TechnicianName { get; set; }
         public bool IsForAnotherPerson { get; set; }
 
-        public Code? Status { get; set; }   // <--- هذه الخاصية مفقودة
+        public string? Statusdesc { get; set; }   // <--- هذه الخاصية مفقودة
 
 
 

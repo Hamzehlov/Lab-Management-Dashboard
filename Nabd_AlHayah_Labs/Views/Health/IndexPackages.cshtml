@@ -3,32 +3,14 @@
 <div class="app-wrapper">
     <div class="app-content pt-3 p-md-3 p-lg-4">
         <div class="container-xl">
-
-            <!-- Header و Search + Add -->
+            
+            <!-- Header و Search + Add + Back to Home -->
             <div class="row g-3 mb-4 align-items-center justify-content-between">
-                <div class="col-auto">
+                <div class="col-auto d-flex align-items-center gap-2">
                     <h1 class="app-page-title mb-0">Health Packages</h1>
-                </div>
-                <div class="col-auto">
-                    <div class="page-utilities">
-                        <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                            <div class="col-auto">
-                                <form class="table-search-form row gx-1 align-items-center">
-                                    <div class="col-auto">
-                                        <input type="text" id="search-packages" name="searchpackages" class="form-control" placeholder="Search">
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn app-btn-secondary">Search</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-auto">
-                                <a asp-action="CreatePackage" class="btn app-btn-primary">
-                                    <i class="fa-solid fa-plus me-1"></i> Add Package
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                    </a>
                 </div>
             </div>
 
@@ -50,52 +32,91 @@
                 </div>
             </div>
 
-            <!-- جدول الباقات -->
+            <div class="col-auto">
+                <a asp-action="CreatePackage" class="btn app-btn-primary">
+                    <i class="fa-solid fa-plus me-1"></i> Add Package
+                </a>
+            </div>
             <div class="app-card app-card-orders-table shadow-sm mb-5">
-                <div class="app-card-body">
-                    <div class="table-responsive">
-                        <table class="table app-table-hover mb-0 text-left">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name (AR/EN)</th>
-                                    <th>Tests Count</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var pkg in Model)
-                                {
+            @if (Model != null && Model.Any())
+            {
+             
+                    <div class="app-card-body">
+                        <div class="table-responsive">
+                            <table id="patientsTable" class="table app-table-hover mb-0 text-left display">
+                                <thead>
                                     <tr>
-                                        <td>@pkg.PackageId</td>
-                                        <td>
-                                            @if (pkg.PackageImage != null)
-                                            {
-                                                var img = Convert.ToBase64String(pkg.PackageImage);
-                                                <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
-                                            }
-                                        </td>
-                                        <td>@pkg.PackageNameAr / @pkg.PackageNameEn</td>
-                                        <td>@pkg.PackageTests.Count</td>
-                                        <td>@pkg.Price.ToString("C")</td>
-                                        <td>
-                                            <a asp-action="EditPackage" asp-route-id="@pkg.PackageId" class="btn-sm app-btn-warning me-1">
-                                                <i class="fas fa-pen-to-square"></i>
-                                            </a>
-                                            <form asp-action="DeletePackage" asp-route-id="@pkg.PackageId" method="post" style="display:inline;">
-                                                <button class="btn-sm app-btn-danger"><i class="fas fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                        <th>#</th>
+                                        <th>Image</th>
+                                        <th>Name (AR/EN)</th>
+                                        <th>Tests Count</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pkg in Model)
+                                    {
+                                        <tr>
+                                            <td>@pkg.PackageId</td>
+                                            <td>
+                                                @if (pkg.PackageImage != null)
+                                                {
+                                                    var img = Convert.ToBase64String(pkg.PackageImage);
+                                                    <img src="data:image/png;base64,@img" class="rounded-circle" width="50" height="50" />
+                                                }
+                                            </td>
+                                            <td>@pkg.PackageNameAr / @pkg.PackageNameEn</td>
+                                            <td>@pkg.PackageTests.Count</td>
+                                            <td>@pkg.Price.ToString("C")</td>
+                                            <td>
+                                                @if (pkg.IsActive == true)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-action="EditPackage" asp-route-id="@pkg.PackageId" class="btn-sm app-btn-warning me-1" title="Edit">
+                                                    <i class="fas fa-pen-to-square"></i>
+                                                </a>
+                                                <a class="btn-sm app-btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+               
+
+                
+            }
+            else
+            {
+                <div class="text-center text-muted py-5 my-5" style="font-size: 1.2rem;">
+                    <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i><br />
+                    No packages available yet.<br />
+                    <span class="text-secondary">لم يتم إضافة أي باقات حتى الآن.</span>
+                    <div class="mt-4">
+                        <a asp-action="CreatePackage" class="btn btn-primary">
+                            <i class="fa-solid fa-plus me-1"></i> Add Package
+                        </a>
                     </div>
                 </div>
+            }
             </div>
-
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#patientsTable').DataTable();
+    });
+</script>

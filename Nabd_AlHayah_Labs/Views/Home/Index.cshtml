@@ -135,7 +135,7 @@
 
                         <!-- الفوتر -->
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Requests</a>
+                            <a class="btn app-btn-secondary" asp-controller="Patient" asp-action="Patient_Requests">View Requests</a>
                         </div>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                         </div>
 
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Appointments</a>
+                            <a class="btn app-btn-secondary" asp-action="Pending_Appointments" asp-controller="Appointments">View Appointments</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
                             <div class="intro">Schedule and manage patient appointments efficiently.</div>
                         </div>
                         <div class="app-card-footer p-4 mt-auto">
-                            <a class="btn app-btn-secondary" href="#">View Appointments</a>
+                            <a class="btn app-btn-secondary" asp-action="index" asp-controller="Appointments">View Appointments</a>
                         </div>
                     </div>
                 </div>
@@ -446,12 +446,5 @@
 		</div><!--//container-fluid-->
 	</div><!--//app-content-->
 
-	<footer class="app-footer">
-		<div class="container text-center py-3">
-			<!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
-			<small class="copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com" target="_blank">Xiaoying Riley</a> for developers</small>
-
-		</div>
-	</footer><!--//app-footer-->
 
 </div><!--//app-wrapper-->

@@ -37,12 +37,34 @@ namespace Nabd_AlHayah_Labs.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Pending_Appointments()
+        {
+            // جلب جميع المواعيد مع البيانات المرتبطة
+      var appointments = await _context.Appointments.Where(x=>x.StatusId==7)
+      .Include(a => a.AppointmentType)
+      .Include(a => a.Status)
+       .Include(a => a.Patient)// ← أضف هذا السطر
+      .Include(a => a.AppointmentTests).ThenInclude(t => t.Test)
+      .Include(a => a.AppointmentPackages).ThenInclude(p => p.Package)
+      .Include(a => a.HomeSamplings)
+      .OrderByDescending(a => a.AppointmentDate)
+      .ToListAsync();
 
+            // تعبئة ViewModel
+            var viewModel = new AppointmentViewModel
+            {
+                Appointments = appointments,
+                // إذا أردت يمكنك إضافة قائمة للـTypes وPackages وTests هنا أيضًا
+            };
+
+            return View(viewModel);
+        }
 
         public async Task<IActionResult> AppointmentDetails(int appointmentId)
         {
             var appointment = await _context.Appointments
-                .Include(a => a.AppointmentType) // نوع الموعد
+                .Include(a => a.AppointmentType)
+                .Include(a=>a.Status)// نوع الموعد
                 .Include(a => a.AppointmentTests).ThenInclude(at => at.Test) // الفحوصات
                 .Include(a => a.AppointmentPackages).ThenInclude(ap => ap.Package) // الباقات
                 .Include(a => a.HomeSamplings) // السحب المنزلي
@@ -58,6 +80,8 @@ namespace Nabd_AlHayah_Labs.Controllers
             var model = new AppointmentViewModel
             {
                 AppointmentId = appointment.AppointmentId,
+                Appointmentdesc = appointment.AppointmentType?.CodeDescEn,
+                Statusdesc = appointment.Status?.CodeDescEn,
                 Patient = appointment.Patient,
                 AppointmentDate = appointment.AppointmentDate,
                 AppointmentTypeId = (int)appointment.AppointmentTypeId,
@@ -93,21 +117,25 @@ namespace Nabd_AlHayah_Labs.Controllers
         }
 
 
-   
-        public async Task<JsonResult> UpdateAppointmentStatus(int AppointmentId, int StatusId, string Notes)
-        {
-            var appointment = await _context.Appointments.FindAsync(AppointmentId);
-            if (appointment == null)
-                return Json(new { success = false });
 
-            appointment.StatusId = StatusId;
-            appointment.Notes = Notes;
-            await _context.SaveChangesAsync();
+		public async Task<JsonResult> UpdateAppointmentStatus(int AppointmentId, int StatusId, string Notes)
+		{
+			var appointment = await _context.Appointments.FindAsync(AppointmentId);
+			if (appointment == null)
+			{
+				TempData["ToastAlertError"] = "الموعد غير موجود.";
+				return Json(new { success = false, message = "الموعد غير موجود." });
+			}
 
-            return Json(new { success = true });
-        }
+			appointment.StatusId = StatusId;
+			appointment.Notes = Notes;
+			await _context.SaveChangesAsync();
+
+			TempData["ToastAlert"] = "تم تحديث حالة الموعد بنجاح.";
+			return Json(new { success = true, message = "تم تحديث حالة الموعد بنجاح." });
+		}
 
 
 
-    }
+	}
 }

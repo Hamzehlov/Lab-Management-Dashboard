@@ -27,6 +27,8 @@ public partial class HealthPackage
 
     public byte[]? PackageImage { get; set; }
 
+    public bool? IsActive { get; set; }
+
     public virtual ICollection<AppointmentPackage> AppointmentPackages { get; set; } = new List<AppointmentPackage>();
 
     public virtual ICollection<PackageTest> PackageTests { get; set; } = new List<PackageTest>();

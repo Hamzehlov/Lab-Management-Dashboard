@@ -18,6 +18,7 @@ public partial class NewsEvent
     public string? ImageUrl { get; set; }
 
     public DateTime? EventDate { get; set; }
+    public bool? IsActive { get; set; }
 
     public byte[]? Image { get; set; }
 }

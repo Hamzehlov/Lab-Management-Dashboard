@@ -62,8 +62,8 @@
                         {
                             <tr>
                                 <td>@app.AppointmentDate.ToString("dd MMM yyyy HH:mm")</td>
-                                <td>@app.AppointmentType?.CodeDescEn ?? app.AppointmentType?.NameAr</td>
-                                <td>@app.Status?.CodeDescEn ?? app.Status?.NameAr</td>
+                                <td>@app.AppointmentType?.CodeDescEn</td>
+                                <td>@app.Status?.CodeDescEn </td>
                                 <td>@app.Notes</td>
                             </tr>
                         }
