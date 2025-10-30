@@ -5,11 +5,24 @@
         <div class="container-xl">
 
             <!-- Header -->
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <a asp-action="Index" class="btn app-btn-light"><i class="fas fa-arrow-left me-1"></i> Back to Patients</a>
-                <h2 class="text-center flex-grow-1 mb-0 fw-bold">@Model.Patient.FullNameEn (@Model.Patient.FullNameAr)</h2>
-                <div style="width: 120px;"></div>
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+                <!-- زر العودة -->
+                <div class="mb-2 mb-md-0">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-3 py-2 rounded-3 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Patients
+                    </a>
+                </div>
+
+                <!-- اسم المريض مركزي -->
+                <h2 class="text-center flex-grow-1 mb-0 fw-bold text-dark" style="font-size: 1.8rem; letter-spacing: 0.5px;">
+                    @Model.Patient.FullNameEn (@Model.Patient.FullNameAr)
+                </h2>
+
+                <!-- مسافة للحفاظ على التباعد -->
+                <div class="mb-2 mb-md-0" style="width: 120px;"></div>
             </div>
+
+            <hr class="text-muted mb-4">
 
             <!-- Add Appointment -->
             <div class="app-card shadow-sm rounded-4 p-3 mb-4 bg-white">

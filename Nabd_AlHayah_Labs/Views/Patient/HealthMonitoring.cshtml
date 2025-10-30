@@ -6,20 +6,24 @@
         <div class="container-xl">
 
             <!-- Header -->
-            <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
                 <!-- Back Button -->
-                <a asp-action="Index" class="btn app-btn-light">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Patients
-                </a>
+                <div class="mb-2 mb-md-0">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-3 py-2 rounded-3 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Patients
+                    </a>
+                </div>
 
                 <!-- Patient Name Centered -->
-                <h2 class="text-center flex-grow-1 mb-0 fw-bold" style="font-size: 1.8rem; letter-spacing: 0.5px;">
+                <h2 class="text-center flex-grow-1 mb-0 fw-bold text-dark" style="font-size: 1.8rem; letter-spacing: 0.5px;">
                     @Model.Patient.FullNameEn (@Model.Patient.FullNameAr)
                 </h2>
 
-                <!-- Placeholder to keep spacing right -->
-                <div style="width: 120px;"></div>
+                <!-- Placeholder for spacing -->
+                <div class="mb-2 mb-md-0" style="width: 120px;"></div>
             </div>
+
+            <hr class="text-muted mb-4">
 
             <!-- Add New Recommendation -->
             <div class="app-card shadow-sm rounded-4 p-3 mb-4 bg-white">

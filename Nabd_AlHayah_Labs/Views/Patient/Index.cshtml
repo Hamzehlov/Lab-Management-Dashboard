@@ -8,13 +8,21 @@
         <div class="container-xl">
 
             <div class="row g-3 mb-4 align-items-center justify-content-between">
-                <div class="col-auto">
-                    <h1 class="app-page-title mb-0">Patients</h1>
-                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                <!-- العنوان مع أيقونة -->
+                <div class="col-md-6 d-flex align-items-center gap-3">
+                    <i class="fas fa-user-injured fa-2x text-primary"></i>
+                    <h1 class="app-page-title mb-0 fw-bold text-dark">Patients</h1>
+                </div>
+
+                <!-- زر العودة -->
+                <div class="col-md-6 text-md-end text-start">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Home
                     </a>
                 </div>
-            </div><!--//row-->
+            </div>
+
+            <hr class="text-muted mb-4">
 
             <div class="row g-3 mb-5">
                 <!-- المرضى بدون Pat_No -->

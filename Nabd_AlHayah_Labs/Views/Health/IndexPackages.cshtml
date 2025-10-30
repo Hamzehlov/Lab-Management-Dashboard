@@ -6,16 +6,23 @@
             
             <!-- Header و Search + Add + Back to Home -->
             <div class="row g-3 mb-4 align-items-center justify-content-between">
-                <div class="col-auto d-flex align-items-center gap-2">
-                    <h1 class="app-page-title mb-0">Health Packages</h1>
-                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mb-3">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Patients
+                <div class="col-md-6 d-flex align-items-center gap-3">
+                    <i class="fas fa-heartbeat fa-2x text-danger"></i>
+                    <h1 class="app-page-title mb-0 fw-bold text-dark">Health Packages</h1>
+                </div>
+
+                <div class="col-md-6 text-md-end text-start">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary px-4 py-2 rounded-3 shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Patients
                     </a>
                 </div>
             </div>
+            <hr class="text-muted mb-4">
+
 
             <!-- إحصائيات الباقات -->
             <div class="row g-3 mb-5">
+                <!-- Total Packages -->
                 <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
                         <h6 class="text-muted mb-1">Total Packages</h6>
@@ -23,11 +30,31 @@
                         <i class="fas fa-box fa-2x text-primary mt-2"></i>
                     </div>
                 </div>
+
+                <!-- Total Tests in Packages -->
                 <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
                         <h6 class="text-muted mb-1">Total Tests in Packages</h6>
                         <h3 class="fw-bold text-success">@Model.Sum(p => p.PackageTests.Count)</h3>
                         <i class="fas fa-vial fa-2x text-success mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- Active Packages -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Active Packages</h6>
+                        <h3 class="fw-bold text-info">@Model.Count(p => p.IsActive == true)</h3>
+                        <i class="fas fa-check-circle fa-2x text-info mt-2"></i>
+                    </div>
+                </div>
+
+                <!-- Inactive Packages -->
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 d-flex flex-column justify-content-between">
+                        <h6 class="text-muted mb-1">Inactive Packages</h6>
+                        <h3 class="fw-bold text-danger">@Model.Count(p => p.IsActive != true)</h3>
+                        <i class="fas fa-times-circle fa-2x text-danger mt-2"></i>
                     </div>
                 </div>
             </div>
