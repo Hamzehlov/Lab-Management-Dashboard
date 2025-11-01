@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MMedicalLaboratoryAPI.Data;
 using Nabd_AlHayah_Labs.Model;
@@ -8,7 +9,8 @@ using System.Diagnostics;
 
 namespace Nabd_AlHayah_Labs.Controllers
 {
-    public class HomeController : Controller
+	[Authorize]
+	public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 

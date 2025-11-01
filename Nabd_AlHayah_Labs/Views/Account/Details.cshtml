@@ -1,0 +1,49 @@
+﻿@model Nabd_AlHayah_Labs.ViewModels.UserDetailsViewModel
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h1 class="mb-4">User Details</h1>
+
+            <!-- زر الرجوع أعلى الصفحة -->
+            <a asp-action="Index" class="btn btn-secondary mb-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to Users
+            </a>
+
+            <div class="card shadow-sm mb-4 p-3">
+                <h4>Basic Information</h4>
+                <p><strong>Full Name:</strong> @Model.User.FullName</p>
+                <p><strong>Email:</strong> @Model.User.Email</p>
+                <p><strong>Phone:</strong> @Model.User.PhoneNumber</p>
+                <p>
+                    <strong>Email Confirmed:</strong>
+                    @if (Model.User.EmailConfirmed)
+                    {
+                        <span class="badge bg-success">Confirmed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Not Confirmed</span>
+                    }
+                </p>
+                <p><strong>Role:</strong> @Model.RoleName</p>
+                <p>
+                    <strong>Is Active:</strong>
+                    @if (Model.User.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </p>
+            </div>
+
+            <!-- زر الرجوع أسفل الصفحة -->
+            <a asp-action="Index" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to Users
+            </a>
+        </div>
+    </div>
+</div>

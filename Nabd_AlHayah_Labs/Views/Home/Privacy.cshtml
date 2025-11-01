@@ -1,6 +1,348 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
+    Layout = null;
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy & Impartiality Policy - AL-HAYA Medical Laboratories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: #1a5276;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        
+        .logo img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+        
+        .company-info {
+            flex-grow: 1;
+        }
+        
+        .company-name {
+            font-size: 2rem;
+            color: #1a5276;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .company-subtitle {
+            font-size: 1.2rem;
+            color: #2980b9;
+        }
+        
+        .contact-info {
+            text-align: right;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background: #1a5276;
+            color: white;
+        }
+        
+        .policy-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .policy-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            color: #1a5276;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        h3 {
+            color: #2980b9;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        li:before {
+            content: "•";
+            color: #e74c3c;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .document-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            background: #1a5276;
+            color: white;
+            border-radius: 8px;
+        }
+        
+        @@media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+            
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .contact-info {
+                text-align: center;
+                margin-top: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .document-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .document-info div {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <!-- Replace with your actual image path -->
+                    <div class="logo">
+                        <img src="~/assets/images/2.jpeg" alt="AL-HAYA Medical Laboratories Logo">
+                    </div>
+                    <div class="company-info">
+                        <div class="company-name">AL-HAYA Medical Laboratories</div>
+                        <div class="company-subtitle">Medical Excellence & Precision</div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <div><strong>Main Branch, Jerash</strong></div>
+                    <div>07 7666 5066</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="showPolicy('privacy')">Privacy Policy</div>
+            <div class="tab" onclick="showPolicy('impartiality')">Impartiality Policy</div>
+        </div>
+        
+        <div id="privacy" class="policy-content active">
+            <h2>Privacy Policy</h2>
+            
+            <h3>Introduction</h3>
+            <p>This Privacy Policy outlines the laboratory's commitment to protecting the privacy of its customers, employees, and other stakeholders.</p>
+            
+            <h3>Purpose</h3>
+            <p>The purpose of this policy is to ensure that the laboratory protects the privacy of its customers, employees, and other stakeholders, and that it complies with relevant privacy laws and regulations.</p>
+            
+            <h3>Scope</h3>
+            <p>This policy applies to all personal information collected, used, or processed by the laboratory, including information collected from customers, employees, and other stakeholders.</p>
+            
+            <h3>Policy</h3>
+            <ul>
+                <li>The laboratory is committed to protecting the privacy of its customers, employees, and other stakeholders, and will comply with relevant privacy laws and regulations.</li>
+                <li>The laboratory will only collect, use, or process personal information that is necessary for the laboratory's operations, and will obtain the consent of the individual concerned before collecting, using, or processing their personal information.</li>
+                <li>The laboratory will store personal information in a secure manner, and will take appropriate measures to protect it from unauthorized access, use, disclosure, alteration, or destruction.</li>
+                <li>The laboratory will not share personal information with third parties, except as required by law or with the consent of the individual concerned.</li>
+                <li>The laboratory will provide individuals with access to their personal information, and will allow them to correct or update any inaccuracies in their information.</li>
+                <li>The laboratory will regularly review its privacy practices and procedures to ensure they remain relevant and effective, and will continuously improve its privacy practices based on the results of these reviews.</li>
+            </ul>
+            
+            <h3>Conclusion</h3>
+            <p>The laboratory is committed to protecting the privacy of its customers, employees, and other stakeholders. This Privacy Policy is an important part of the laboratory's commitment to privacy, and is intended to ensure that the laboratory protects the privacy of its customers, employees, and other stakeholders, and that it complies with relevant privacy laws and regulations.</p>
+            
+            <div class="document-info">
+                <div>Ver/Rev.No.: 01/00</div>
+                <div>Page 1 of 2</div>
+                <div>GN_PO_05</div>
+            </div>
+        </div>
+        
+        <div id="impartiality" class="policy-content">
+            <h2>Impartiality Policy</h2>
+            
+            <h3>Introduction</h3>
+            <p>AL-HAYA Medical Laboratories is committed to providing impartial and objective results to its clients. In order to achieve this, AL-HAYA Medical Laboratories has established an impartiality policy to ensure that its activities are free from bias and influence.</p>
+            
+            <h3>Purpose</h3>
+            <p>The purpose of this policy is to outline the steps that AL-HAYA Medical Laboratories will take to ensure impartiality in all of its activities. This policy applies to all employees and contractors of AL-HAYA Medical Laboratories.</p>
+            
+            <h3>Scope</h3>
+            <p>This policy applies to all activities performed by AL-HAYA Medical Laboratories, including sample preparation, testing, and reporting of results.</p>
+            
+            <h3>Impartiality Requirements</h3>
+            <p>AL-HAYA Medical Laboratories will implement the following impartiality requirements to ensure impartiality in all of its activities:</p>
+            <ul>
+                <li><strong>Independence from commercial and financial interests:</strong> AL-HAYA Medical Laboratories will ensure that its activities are independent from commercial and financial interests and that its results are not influenced by such interests.</li>
+                <li><strong>Avoidance of conflicts of interest:</strong> AL-HAYA Medical Laboratories will ensure that its employees and contractors are aware of potential conflicts of interest and that they take steps to avoid such conflicts.</li>
+                <li><strong>Transparency:</strong> AL-HAYA Medical Laboratories will be transparent about its activities and will make information about its operations and procedures available to clients and other stakeholders.</li>
+                <li><strong>Management of complaints and grievances:</strong> AL-HAYA Medical Laboratories will have a process in place for the management of complaints and grievances and will take steps to resolve any such complaints in a timely and impartial manner.</li>
+                <li><strong>Regular review of impartiality requirements:</strong> AL-HAYA Medical Laboratories will regularly review its impartiality requirements to ensure that they are current and relevant.</li>
+            </ul>
+            
+            <h3>Monitoring and Review</h3>
+            <p>AL-HAYA Medical Laboratories will regularly monitor and review its impartiality activities to ensure that they are effective and efficient, and that they are aligned with the needs and expectations of its clients.</p>
+            
+            <h3>Conclusion</h3>
+            <p>This policy outlines the steps that AL-HAYA Medical Laboratories will take to ensure impartiality in all of its activities. AL-HAYA Medical Laboratories is committed to impartiality and to ensuring that its results are free from bias and influence.</p>
+            
+            <div class="document-info">
+                <div>Ver/Rev.No.: 01/00</div>
+                <div>Page 1 of 2</div>
+                <div>GN_PO_04</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>AL-HAYA Medical Laboratories &copy; 2023. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showPolicy(policyId) {
+            // Hide all policy contents
+            const policyContents = document.querySelectorAll('.policy-content');
+            policyContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected policy content
+            document.getElementById(policyId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

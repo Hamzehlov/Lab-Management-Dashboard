@@ -297,7 +297,12 @@
 									<li><a class="dropdown-item" href="account.html.htm">Account</a></li>
 									<li><a class="dropdown-item" href="settings.html.htm">Settings</a></li>
 									<li><hr class="dropdown-divider"></li>
-									<li><a class="dropdown-item" href="login.html.htm">Log Out</a></li>
+									<li>
+										<form id="logoutForm" method="post" asp-controller="Account" asp-action="Logout">
+											@Html.AntiForgeryToken()
+											<button type="submit" class="dropdown-item">Log Out</button>
+										</form>
+									</li>
 								</ul>
 							</div><!--//app-user-dropdown-->
 						</div><!--//app-utilities-->
@@ -416,8 +421,7 @@
 							</a>
 							<div id="submenu-settings" class="collapse submenu" data-bs-parent="#menu-accordion">
 								<ul class="submenu-list list-unstyled">
-									<li class="submenu-item"><a class="submenu-link" href="users.html">Users</a></li>
-									<li class="submenu-item"><a class="submenu-link" href="lookup.html">Lookup</a></li>
+									<li class="submenu-item"><a class="submenu-link" asp-controller="Account" asp-action="Index">Users</a></li>
 								</ul>
 							</div>
 						</li>
@@ -425,30 +429,26 @@
 					</ul><!--//app-menu-->
 				</nav><!--//app-nav-->
 				<!-- Footer السيدبار -->
-				<div class="app-sidepanel-footer mt-auto">
-					<nav class="app-nav app-nav-footer">
-						<ul class="app-menu footer-menu list-unstyled">
-							<li class="nav-item">
-								<a class="nav-link" href="settings.html.htm">
-									<span class="nav-icon"><i class="fas fa-cog"></i></span>
-									<span class="nav-link-text">Settings</span>
-								</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="#">
-									<span class="nav-icon"><i class="fas fa-download"></i></span>
-									<span class="nav-link-text">Download</span>
-								</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="#">
-									<span class="nav-icon"><i class="fas fa-file-alt"></i></span>
-									<span class="nav-link-text">License</span>
-								</a>
-							</li>
-						</ul>
-					</nav>
-				</div><!--//app-sidepanel-footer-->
+
+				<div class="app-sidepanel-footer mt-auto text-center p-3">
+					<i class="fas fa-user-circle fa-2x mb-2"></i>
+					<div>
+						@if (User.Identity.IsAuthenticated)
+						{
+							<strong>@User.Identity.Name</strong> <br />
+
+							// هنا مباشرة كود C# بدون @{ }
+							var roleClaim = ((ClaimsIdentity)User.Identity).FindFirst(ClaimTypes.Role);
+							var roleName = roleClaim != null ? roleClaim.Value : "No Role";
+
+							<small class="text-muted">@roleName</small>
+						}
+						else
+						{
+							<span>Guest</span>
+						}
+					</div>
+				</div>
 
 			</div><!--//sidepanel-inner-->
 		</div><!--//app-sidepanel-->

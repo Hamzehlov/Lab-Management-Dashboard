@@ -539,7 +539,7 @@ namespace Nabd_AlHayah_Labs.Controllers
 				personalized.DescriptionEn = model.DescriptionEn;
 				personalized.RequirementsAr = model.RequirementsAr;
 				personalized.RequirementsEn = model.RequirementsEn;
-
+				personalized.IsActive = model.IsActive ;
 				if (model.CardImageFile != null)
 				{
 					using var ms = new MemoryStream();

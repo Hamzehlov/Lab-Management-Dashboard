@@ -6,11 +6,11 @@ namespace Nabd_AlHayah_Labs.Models
     {
 
 
-      
-	
+        public bool IsActive { get; set; } = true; // القيمة الافتراضية True
+
+
         public int? BranchID { get; set; }
 
-  
-
-	}
+        public string? FullName { get; set; }
+    }
 }
